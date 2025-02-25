@@ -1,18 +1,27 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from model.user import User
+from database import db
+from service.user_service import UserService
 
 user_bp = Blueprint("user", __name__, url_prefix="/users")
+user_service = UserService(db.session)
 
 @user_bp.route("/", method="GET")
 def get_all_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
-@user_bp.route("/", method="POST")
-def create_user():
-    pass
+@user_bp.route("/register", method="POST")
+def register_user():
+    data = request.get_json()
 
-user_bp.route("/<int:user_id>", method="GET")
-def get_user():
-    pass
+    user = user_service.register_user(data)
+    return user.to_dict(), 201
+
+@user_bp.route("/login", method="POST")
+def login_user():
+    data = request.get_json()
+
+    user = user_service.login_user(data)
+    return user.to_dict(), 201
