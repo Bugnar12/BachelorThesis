@@ -13,16 +13,22 @@ class UserService:
         self.__repository = Repository(db_session)
 
     def register_user(self, user_data):
-        user = User()
-        user.from_dict(user_data)
-        user.user_password = generate_password_hash(user.user_password)
+        hashed_password = generate_password_hash(user_data["user_password"])
+
+        # Create a new user instance with the correct arguments
+        user = User(
+            user_name=user_data["user_name"],
+            user_email=user_data["user_email"],
+            user_password=hashed_password  # Use hashed password
+        )
+
         logger.info("Adding user {}".format(user))
         return self.__repository.add_user(user)
 
 
     def login_user(self, user_data):
-        user = self.__repository.find_by_email(user_data['email'])
-        if user and check_password_hash(user.user_password, user_data['password']):
+        user = self.__repository.find_by_email(user_data['user_email'])
+        if user and check_password_hash(user.user_password, user_data['user_password']):
             logger.info("Logging in user: {}".format(user))
             return user
         return None

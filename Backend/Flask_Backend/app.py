@@ -1,18 +1,18 @@
 from flask import Flask
-
+from config.config import Config
+from database import db
+from routes.user_routes import user_bp
 from utils.logs import get_logger
 
 app = Flask(__name__)
-logger = get_logger()
-
-@app.route('/')
-def hello_world():  # put application's code here
-    logger.info("This is an info message")
-    logger.warning("This is a warning message")
-    logger.exception("This is an exception message")
-    logger.error("This is an error message")
-    return 'Hello World!'
+app.config.from_object(Config)
+db.init_app(app)
+app.register_blueprint(user_bp)
 
 
-if __name__ == '__main__':
+with app.app_context():
+    db.create_all()
+
+# ✅ Run the App
+if __name__ == "__main__":
     app.run()
