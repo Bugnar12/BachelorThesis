@@ -9,6 +9,10 @@ def upload_email():
     file_path = "uploads/{}".format(file.filename)
     file.save(file_path)
 
-    email = email
+    email = "empty"
 
     return email.to_dict(), 201
+
+@email_bp.route("/predict", methods=["POST"])
+def predict_email():
+    pass

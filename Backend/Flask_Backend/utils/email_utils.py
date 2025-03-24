@@ -1,8 +1,11 @@
 import email
+import joblib
 from email import policy
+from utils.definitions import AI_MODEL_ABS_PATH
 
 
 def parse_email(email_file_path):
+    """Parses the raw .eml file and extracts its content in a more readable form."""
     with open(email_file_path, "r", encoding="utf-8") as f:
         email_content = email.message_from_file(f, policy=policy.default)
     return email_content
@@ -24,3 +27,8 @@ def get_email_body(email_content):
         body = email_content.get_payload(decode=True).decode(email_content.get_content_charset(), errors="ignore")
 
     return body
+
+def load_model():
+    """Loads the AI model that predicts phishing based on email body and returns it."""
+    model = joblib.load(AI_MODEL_ABS_PATH)
+    return model
