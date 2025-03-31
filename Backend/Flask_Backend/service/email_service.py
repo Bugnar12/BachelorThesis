@@ -1,3 +1,4 @@
+from model.email import Email
 from repository.repository import Repository
 from utils.email_utils import get_email_header, load_model, get_email_body
 from utils.logs import get_logger
@@ -20,7 +21,14 @@ class EmailService:
         email = self.__repository.save_email(email)
         return email
 
-    def predict_email_text(self, email):
-        email_body = get_email_body(email)
-        predicted_value = self.__model.predict_proba([email_body])
-        logger.info("Phishing email percent: {}\n Safe email percent: {}").format(predicted_value)
+    def predict_email_text(self, email_id):
+        email = Email.query.filter_by(email_id=email_id).first() # TODO: add this in the repository instead
+        email_body = email.email_body
+        probabilities = self.__model.predict_proba([email_body])[0]
+
+        prediction = "Potentially phishing email" if probabilities[1] >= 0.7 else "Safe email"
+
+        return {
+            "prediction": prediction,  # e.g., 'phishing' or 'safe'
+            # "probabilities": probabilities[0].tolist()  # e.g., [0.1, 0.9]
+        }

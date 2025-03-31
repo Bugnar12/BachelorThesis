@@ -1,6 +1,9 @@
 import email
 import joblib
 from email import policy
+
+from google.oauth2.credentials import Credentials
+
 from utils.definitions import AI_MODEL_ABS_PATH
 
 
@@ -32,3 +35,24 @@ def load_model():
     """Loads the AI model that predicts phishing based on email body and returns it."""
     model = joblib.load(AI_MODEL_ABS_PATH)
     return model
+
+def build_credentials_for_user(user):
+    """
+    Builds the Gmail API credentials for a given user based on the associated GmailToken.
+    """
+    gmail_token = user.gmail_token  # assuming one-to-one relationship via backref
+
+    if not gmail_token:
+        raise ValueError(f"No Gmail token found for user {user.user_email}")
+
+    creds = Credentials(
+        token=gmail_token.access_token,
+        refresh_token=gmail_token.refresh_token,
+        id_token=gmail_token.id_token,
+        token_uri=gmail_token.token_uri,
+        client_id=gmail_token.client_id,
+        client_secret=gmail_token.client_secret,
+        scopes=gmail_token.scopes.split(",") if isinstance(gmail_token.scopes, str) else gmail_token.scopes
+    )
+
+    return creds
