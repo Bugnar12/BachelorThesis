@@ -2,8 +2,11 @@ import email
 import joblib
 from email import policy
 
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
+from database import db
+from model.user import User
 from utils.definitions import AI_MODEL_ABS_PATH
 
 
@@ -54,5 +57,35 @@ def build_credentials_for_user(user):
         client_secret=gmail_token.client_secret,
         scopes=gmail_token.scopes.split(",") if isinstance(gmail_token.scopes, str) else gmail_token.scopes
     )
+
+    return creds
+
+def get_credentials_for_user(email_address):
+    """
+    Load and refresh Gmail API credentials for a user by email address.
+    """
+    user = User.query.filter_by(user_email=email_address).first()
+
+    if not user or not user.gmail_token:
+        return None
+
+    token = user.gmail_token
+
+    creds = Credentials(
+        token=token.access_token,
+        refresh_token=token.refresh_token,
+        id_token=token.id_token,
+        token_uri=token.token_uri,
+        client_id=token.client_id,
+        client_secret=token.client_secret,
+        scopes=token.scopes.split(",") if isinstance(token.scopes, str) else token.scopes
+    )
+
+    # Refresh expired refresh_token
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+
+        token.access_token = creds.token
+        db.session.commit()
 
     return creds

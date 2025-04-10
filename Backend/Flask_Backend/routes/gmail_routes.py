@@ -1,3 +1,6 @@
+import base64
+import json
+
 from flask import Blueprint, redirect, session, request
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
@@ -53,6 +56,14 @@ def gmail_callback():
     profile = service.users().getProfile(userId='me').execute()
     email = profile['emailAddress']
 
+    # Service for watching the inbox gmail of the user using Gmail API
+    watch_request_body = {
+        "labelIds": ["INBOX"],
+        "topicName": GmailConfig.GMAIL_SUBSCRIPTION_TOPIC
+    }
+    watch_response = service.users().watch(userId='me', body=watch_request_body).execute()
+    logger.info("Watch started for user with email {}: {}".format(email, watch_response))
+
     user = User.query.filter_by(user_email=email).first()
     if not user:
         user = User(user_email=email)
@@ -62,3 +73,20 @@ def gmail_callback():
     gmail_service.handle_oauth_callback(creds, user)
 
     return f"Successfully authorized {email}"
+
+@gmail_bp.route("/notification", methods=["POST"])
+def fetch_gmail_notif():
+    envelope = request.get_json()
+
+    # TODO: create nice utils function for those base64 encodings and move some of this logic into the service
+    message = envelope.get("message")
+    data = base64.b64decode(message['data'].encode('utf-8')).decode('utf-8')
+    parsed_data = json.loads(data)
+
+    email_address = parsed_data['emailAddress']
+    history_id = parsed_data['historyId']
+
+    gmail_service.process_notification(email_address, history_id)
+    logger.info("Gmail data received: {}".format(parsed_data))
+
+    return "Status 200", 200
