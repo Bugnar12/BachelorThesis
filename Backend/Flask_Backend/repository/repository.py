@@ -16,6 +16,9 @@ class Repository:
     def get_user_by_id(self, user_id):
         return self.__db.query(User).filter_by(user_id=user_id).first()
 
+    def get_emails_by_user(self, user_id):
+        return self.__db.query(Email).filter_by(user_id=user_id).order_by(Email.email_timestamp.desc()).all()
+
     def add_user(self, added_user):
         """
             Adds a user to the database

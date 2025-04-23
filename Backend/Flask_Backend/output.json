@@ -1,0 +1,150 @@
+{
+    "id": "19654acee62387be",
+    "threadId": "19654acee62387be",
+    "labelIds": [
+        "UNREAD",
+        "INBOX"
+    ],
+    "snippet": "TestEaster12 https://www.youtube.com/",
+    "payload": {
+        "partId": "",
+        "mimeType": "multipart/alternative",
+        "filename": "",
+        "headers": [
+            {
+                "name": "Delivered-To",
+                "value": "marysmith1384063@gmail.com"
+            },
+            {
+                "name": "Received",
+                "value": "by 2002:adf:e2d1:0:b0:39a:bdad:5163 with SMTP id d17csp1018279wrj;        Sun, 20 Apr 2025 12:29:01 -0700 (PDT)"
+            },
+            {
+                "name": "X-Received",
+                "value": "by 2002:a17:90b:3b8d:b0:2ee:aed2:c15c with SMTP id 98e67ed59e1d1-3087bbaeb98mr13566263a91.28.1745177341532;        Sun, 20 Apr 2025 12:29:01 -0700 (PDT)"
+            },
+            {
+                "name": "ARC-Seal",
+                "value": "i=1; a=rsa-sha256; t=1745177341; cv=none;        d=google.com; s=arc-20240605;        b=NDxtkbgcmjUtEWSN+RWDlCtxMFbMPLnyYQV1hzoWc2VPqGRbEqlplV/KpmQPCGa/rW         QYxP9tCkB6RAbdOX02G6X/Gt4T3PjcpGwh0Qk9G8gVB9d/k1ypQ4Vs/lrVFOc+dC98n2         ZAEN8EqkAlWvCZSK3POHOy88COmzDpgrhRWh4wK6NFPR2LdtCWt7fH/GBj4zWgIvhO8r         j0kLVH3wpsba4GhbvdP0cF9IYN1/Y2YNwcZPQOzb7VjyAcDKUOBvsW8CF1Jo1CPuTEyE         csubjYzb9kElaWJpgTtGuJwvW8l1smrxOX/QI4lF0uNAJAirudXLX8l22IFqiujl3UmI         s5wA=="
+            },
+            {
+                "name": "ARC-Message-Signature",
+                "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=to:subject:message-id:date:from:mime-version:dkim-signature;        bh=HUGiVfe0X+Ppltr2kdkSCLx2OyNBroLW83uyog1UOFU=;        fh=qM9KjF2oN/BABsc2p3rckOytXQI42zfibNdzDm9pf0M=;        b=TlBCi9gIsSF3lDzys+6ItJzqWTaImY5EyVc9H07I7ZBhNgvayOPIptDtEqrA0Q5a06         /VH9Pn6aQPEJcM8g+2kDBdBciJlSf/0yytBEFHjI0bIZ+YQOYndBj8xYLI95BD75vfln         hA2A9TplDgmMY/utXFXqj6Ull5qNRdesY8ABAZzA+6DZAGtOKlniOhRFh+Lf69WxII8H         qwkQsD8xkjr+ndOWp+7CW81OVU1XdTyPtJfD+PxWaz1BZbhhTy2egJ++sjB/TQcK2H7b         3lmmyQtaRpYDHgYNhLQlymlcYNWi+sDnYo+YY/K3FvubNodT3yeT8erD1i13cWNnqyy+         nssA==;        dara=google.com"
+            },
+            {
+                "name": "ARC-Authentication-Results",
+                "value": "i=1; mx.google.com;       dkim=pass header.i=@gmail.com header.s=20230601 header.b=lE80Ltuu;       spf=pass (google.com: domain of eduardbugnaru@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=eduardbugnaru@gmail.com;       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;       dara=pass header.i=@gmail.com"
+            },
+            {
+                "name": "Return-Path",
+                "value": "<eduardbugnaru@gmail.com>"
+            },
+            {
+                "name": "Received",
+                "value": "from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])        by mx.google.com with SMTPS id 98e67ed59e1d1-30879f2bee4sor3310704a91.1.2025.04.20.12.29.01        for <marysmith1384063@gmail.com>        (Google Transport Security);        Sun, 20 Apr 2025 12:29:01 -0700 (PDT)"
+            },
+            {
+                "name": "Received-SPF",
+                "value": "pass (google.com: domain of eduardbugnaru@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;"
+            },
+            {
+                "name": "Authentication-Results",
+                "value": "mx.google.com;       dkim=pass header.i=@gmail.com header.s=20230601 header.b=lE80Ltuu;       spf=pass (google.com: domain of eduardbugnaru@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=eduardbugnaru@gmail.com;       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;       dara=pass header.i=@gmail.com"
+            },
+            {
+                "name": "DKIM-Signature",
+                "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=gmail.com; s=20230601; t=1745177340; x=1745782140; dara=google.com;        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject         :date:message-id:reply-to;        bh=HUGiVfe0X+Ppltr2kdkSCLx2OyNBroLW83uyog1UOFU=;        b=lE80LtuuxxK8pQ5FWNr9UHfgGHvOZL/rkvGQAceCPdRDDuRXx+xNInwyae4IBXAe7V         GFLqQMjWasmqthJjY3MatB9ZrkCebQWBWM9xi1xU0zsc1NOBDejtaviXFKrP0pCR+toC         T9BnfR4M3pgiaCNEF8AMP/FM2hexeNP3O53MzMbGD+nQRGBi2spKzjp1/8KUBex9Dpb2         XKoQyWr7Dv2eqORpA0BC4H0tFKTTzjq/Xnowy2e+Oi12sx+V/c4Clifl/J/GjI1KrxBo         Dmlyk6ZP+2xAbjAfxdvLBtLoQhqdCiE1a9GL2H2M2flVJjTBFxBgvYCx9KArtAVxZA+8         0HTQ=="
+            },
+            {
+                "name": "X-Google-DKIM-Signature",
+                "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20230601; t=1745177340; x=1745782140;        h=to:subject:message-id:date:from:mime-version:x-gm-message-state         :from:to:cc:subject:date:message-id:reply-to;        bh=HUGiVfe0X+Ppltr2kdkSCLx2OyNBroLW83uyog1UOFU=;        b=DvDd6hl8LUscYj0JqTZJDVpd04xy6U42SNZkfnEPRDUPjCawve8Hcum5BphwAM7YZM         2w5SDA2nqkN7YmNNa0HPWPoGjhoDX9JHFa6cXZ61h8601hu9EKk0g+Bo0oAOGGfkuGXF         MvABzMKlIua6ixsflsCbC0yf/tExeDMZyHBmgIsphpQQkKK67OlsZe8ZdUQ1SKr+lqVu         4hhRBP/et2oUnjjTVeqyYuiBamuIUTg0CQPJC7ggQjq+rkJkEagsgANvIj2lXbvbyn8e         4v2v2No3A84L6ifHBernn2i62PMWvG4bO1nNHjTQbY3s24SMBAQYlw/e4B8Lx9XS0IiM         cCvg=="
+            },
+            {
+                "name": "X-Gm-Message-State",
+                "value": "AOJu0Yw/IKs7f57DKRl01+WgoGHU9SRAhHPV+XqJRqlCNk6G6AAajCqM AY6p4O5+kYBX7WDbKOlyIYy4rBkinVl4qKC8fBGJSkazoAGJj2Ed9oEuLppr1pt9dKUcpZp6T7h QkA/rpndbUtkLWTrKZ7Ar9PWapkVuj1CooUU="
+            },
+            {
+                "name": "X-Gm-Gg",
+                "value": "ASbGncsanng5cO+HUbRemfblov5Fvy4FrZhn4MV24Cob9INHuD2wv+KFe8+dtXNM3dD dssTpJLTtjN3vBdK7uBJe8NadD+g7hkAQiPYLStp0zLCWtOzPa4Rz5pDlGD0d5ESSz9Nmn2vLM1 RkGXtVhmZT6DO0uzhZVOOO"
+            },
+            {
+                "name": "X-Google-Smtp-Source",
+                "value": "AGHT+IE3PgWwpLakDpoyi84liedjtSlKarvARuWnL1yOFfhW8b8EM8JsNSERXeYidLslmhW0Zp5upaPlNofmI291buo="
+            },
+            {
+                "name": "X-Received",
+                "value": "by 2002:a17:90b:3c90:b0:2ff:58e1:2bc9 with SMTP id 98e67ed59e1d1-3087bbb08c0mr13096627a91.25.1745177340458; Sun, 20 Apr 2025 12:29:00 -0700 (PDT)"
+            },
+            {
+                "name": "MIME-Version",
+                "value": "1.0"
+            },
+            {
+                "name": "From",
+                "value": "Bugnar <eduardbugnaru@gmail.com>"
+            },
+            {
+                "name": "Date",
+                "value": "Sun, 20 Apr 2025 22:28:50 +0300"
+            },
+            {
+                "name": "X-Gm-Features",
+                "value": "ATxdqUFsBVoW8sQw8BHfwvLaWaS7h12ppP27gocq2EtndbnEUjJkEH-6kTK7dzE"
+            },
+            {
+                "name": "Message-ID",
+                "value": "<CABC2j1o=S7Oj3U4yFG=gKEdWt2n18H9q8SSw9qxq=ZDOx4_AJQ@mail.gmail.com>"
+            },
+            {
+                "name": "Subject",
+                "value": "TestEaster12"
+            },
+            {
+                "name": "To",
+                "value": "marysmith1384063@gmail.com"
+            },
+            {
+                "name": "Content-Type",
+                "value": "multipart/alternative; boundary=\"00000000000072c74e06333ac3e4\""
+            }
+        ],
+        "body": {
+            "size": 0
+        },
+        "parts": [
+            {
+                "partId": "0",
+                "mimeType": "text/plain",
+                "filename": "",
+                "headers": [
+                    {
+                        "name": "Content-Type",
+                        "value": "text/plain; charset=\"UTF-8\""
+                    }
+                ],
+                "body": {
+                    "size": 40,
+                    "data": "VGVzdEVhc3RlcjEyDQpodHRwczovL3d3dy55b3V0dWJlLmNvbS8NCg=="
+                }
+            },
+            {
+                "partId": "1",
+                "mimeType": "text/html",
+                "filename": "",
+                "headers": [
+                    {
+                        "name": "Content-Type",
+                        "value": "text/html; charset=\"UTF-8\""
+                    }
+                ],
+                "body": {
+                    "size": 102,
+                    "data": "PGRpdiBkaXI9Imx0ciI-VGVzdEVhc3RlcjEyPGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tLyI-aHR0cHM6Ly93d3cueW91dHViZS5jb20vPC9hPjwvZGl2Pg0K"
+                }
+            }
+        ]
+    },
+    "sizeEstimate": 5630,
+    "historyId": "4522",
+    "internalDate": "1745177330000"
+}

@@ -1,10 +1,10 @@
+import base64
 import email
+import re
 import joblib
 from email import policy
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-
 from database import db
 from model.user import User
 from utils.definitions import AI_MODEL_ABS_PATH
@@ -33,6 +33,19 @@ def get_email_body(email_content):
         body = email_content.get_payload(decode=True).decode(email_content.get_content_charset(), errors="ignore")
 
     return body
+
+def extract_decode_email_body(email_payload):
+    if 'parts' in email_payload:
+        for part in email_payload['parts']:
+            # MIME can be text/plain or text/html
+            mime = part.get('mimeType')
+            data = part.get('body', {}).get('data')
+            if data:
+                decoded_text = base64.urlsafe_b64decode(data.encode('utf-8')).decode('utf-8')
+                if mime == 'text/plain':
+                    return decoded_text
+    elif 'body' in email_payload and 'data' in email_payload['body']:
+        return base64.urlsafe_b64decode(email_payload['body']['data'].encode('utf-8')).decode('utf-8')
 
 def load_model():
     """Loads the AI model that predicts phishing based on email body and returns it."""
@@ -89,3 +102,7 @@ def get_credentials_for_user(email_address):
         db.session.commit()
 
     return creds
+
+def extract_url_from_body(body):
+    url_pattern = r"https?://[^\s]+"
+    return re.findall(url_pattern, body)

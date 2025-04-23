@@ -29,13 +29,16 @@ class Email(db.Model):
         return {
             "email_id": self.email_id,
             "user_id": self.user_id,
+            "gmail_message_id": self.gmail_message_id,
+            "email_subject": self.email_subject,
             "email_sender": self.email_sender,
             "email_recipient": self.email_recipient,
             "email_body": self.email_body,
+            "email_timestamp": self.email_timestamp.isoformat(),
         }
 
     def from_dict(self, data):
-        for field in ["user_id", "email_sender", "email_recipient", "email_body", "email_raw_header"]:
+        for field in ["user_id", "gmail_message_id", "email_subject", "email_sender", "email_recipient", "email_body"]:
             if field in data:
                 setattr(self, field, data[field])
 

@@ -4,6 +4,7 @@ from flask import Flask, render_template
 
 from config.config import Config
 from database import db
+from jwt_auth import jwt
 from routes.email_routes import email_bp
 from routes.gmail_routes import gmail_bp
 from routes.user_routes import user_bp
@@ -15,9 +16,12 @@ app = Flask(__name__)
 # Session(app)
 
 app.secret_key = Config.APP_SECRET_KEY
+app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY
 app.config.from_object(Config)
 
 db.init_app(app)
+jwt.init_app(app)
+
 # TODO: encapsulate all this registering in a function or something
 app.register_blueprint(user_bp)
 app.register_blueprint(email_bp)
@@ -30,5 +34,5 @@ def index():
 with app.app_context():
     db.create_all()
 
-if __name__ == "__main__":
-    app.run(host="localhost", port=5000)
+if __name__ == '__main__':
+    app.run(debug=True)

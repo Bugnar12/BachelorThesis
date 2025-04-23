@@ -1,7 +1,9 @@
 import base64
 import json
+from datetime import timedelta
 
-from flask import Blueprint, redirect, session, request
+from flask import Blueprint, redirect, session, request, jsonify
+from flask_jwt_extended import create_access_token
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
@@ -55,6 +57,7 @@ def gmail_callback():
     service = build('gmail', 'v1', credentials=creds)
     profile = service.users().getProfile(userId='me').execute()
     email = profile['emailAddress']
+    user = User.query.filter_by(user_email=email).first()
 
     # Service for watching the inbox gmail of the user using Gmail API
     watch_request_body = {
@@ -62,17 +65,27 @@ def gmail_callback():
         "topicName": GmailConfig.GMAIL_SUBSCRIPTION_TOPIC
     }
     watch_response = service.users().watch(userId='me', body=watch_request_body).execute()
+    new_history_id = watch_response.get("historyId")
     logger.info("Watch started for user with email {}: {}".format(email, watch_response))
 
-    user = User.query.filter_by(user_email=email).first()
     if not user:
-        user = User(user_email=email)
+        user = User(user_email=email, last_history_id=new_history_id)
         db.session.add(user)
         db.session.commit()
 
-    gmail_service.handle_oauth_callback(creds, user)
+    user.last_history_id = new_history_id
+    db.session.commit()
 
-    return f"Successfully authorized {email}"
+    gmail_service.handle_oauth_callback(creds, user)
+    # JWT authorization
+    access_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=15))
+    # modify this after testing -> increase the expiration time by a lot
+    refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
+
+    return jsonify({
+        'access_token': access_token,
+        'refresh_token': refresh_token
+    })
 
 @gmail_bp.route("/notification", methods=["POST"])
 def fetch_gmail_notif():
