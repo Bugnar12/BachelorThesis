@@ -1,0 +1,40 @@
+<script>
+function getQueryParam(param) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(param);
+}
+
+// Extract tokens from URL if they exist
+const accessToken = getQueryParam('access_token');
+const refreshToken = getQueryParam('refresh_token');
+
+if (accessToken) {
+  sessionStorage.setItem('access_token', accessToken);
+}
+if (refreshToken) {
+  sessionStorage.setItem('refresh_token', refreshToken);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const token = sessionStorage.getItem('access_token');
+    document.getElementById('access_token').textContent = token || 'nothing found';
+})
+</script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+
+<h1>Phishing detection enabled</h1>
+<p>Push Notifications are on</p>
+<p>Access token is: <span id="access_token"></span></p>
+
+<script src="/static/notifications/notifications.js"></script>
+
+</body>
+</html>

@@ -1,8 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head><title>Login</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
 <body>
     <h2>Login with Gmail</h2>
     <a href="{{ url_for('gmail.authorize') }}">Sign in with Google</a>
+
+    <!-- After login, we'll redirect to /dashboard -->
 </body>
 </html>

@@ -29,3 +29,7 @@ def get_emails():
     # converting to list of dicts to send JSON response
     dict_emails = [email.to_dict() for email in emails]
     return jsonify(dict_emails), 200
+
+@email_bp.route("/get_dns_info", methods=["GET"])
+def get_dns_info(url):
+    return email_service.vt_dns_info(url)

@@ -9,6 +9,7 @@ class User(db.Model):
 
     gmail_token= db.relationship('GmailToken', backref='user', uselist=False)
     last_history_id = db.Column(db.String(200))
+    push_subscription = db.Column(db.String, nullable=True)
 
     def __init__(self, user_email, last_history_id, user_name=None):
         self.user_email = user_email

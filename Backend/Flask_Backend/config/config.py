@@ -10,10 +10,10 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv('FLASK_JWT_SECRET_KEY')
+    # TODO: MODIFY THIS AFTER TESTING TO A LONGER TIME
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
-    # MODIFY THIS AFTER TESTING TO A LONGER TIME
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=31)
-    MXTOOLBOX_API_KEY = os.getenv('MXTOOLBOX_API_KEY')
+    VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY')
 
 class GmailConfig:
     CLIENT_SECRET_FILE = os.getenv('GMAIL_CLIENT_SECRET')
@@ -23,3 +23,10 @@ class GmailConfig:
 
 class HFConfig:
     HF_API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')
+
+class VAPIDConfig:
+    VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY')
+    VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY')
+    VAPID_CLAIMS = {
+        "sub": "mailto:eduardbugnaru@gmail.com"
+    }

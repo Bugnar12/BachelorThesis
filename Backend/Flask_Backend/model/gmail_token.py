@@ -26,4 +26,3 @@ class GmailToken(db.Model):
             client_secret=creds.client_secret,
             scopes=','.join(creds.scopes),
         )
-

@@ -10,14 +10,13 @@ class Repository:
     def __init__(self, database):
         self.__db = database
 
+    ###### USER SECTION ######
+
     def get_all_users(self):
         return self.__db.query(User).all()
 
     def get_user_by_id(self, user_id):
         return self.__db.query(User).filter_by(user_id=user_id).first()
-
-    def get_emails_by_user(self, user_id):
-        return self.__db.query(Email).filter_by(user_id=user_id).order_by(Email.email_timestamp.desc()).all()
 
     def add_user(self, added_user):
         """
@@ -27,7 +26,12 @@ class Repository:
         self.__db.commit()
         return added_user
 
-    def find_by_email(self, email):
+    ###### EMAIL SECTION ######
+
+    def get_emails_by_user(self, user_id):
+        return self.__db.query(Email).filter_by(user_id=user_id).order_by(Email.email_timestamp.desc()).all()
+
+    def get_user_by_email(self, email):
         """
             Finds a user by its email and returns it
         """
@@ -45,6 +49,18 @@ class Repository:
 
     def is_email_processed(self, gmail_message_id):
         return self.__db.query(Email).filter_by(gmail_message_id=gmail_message_id).first() is not None
+
+    def get_email_by_gmail_message_id(self, gmail_message_id):
+        """
+            Returns an email object from the database
+        """
+        return self.__db.query(Email).filter_by(gmail_message_id=gmail_message_id).first()
+
+    def get_email_by_id(self, email_id):
+        """
+            Returns an email object from the database
+        """
+        return self.__db.query(Email).filter_by(email_id=email_id).first()
 
     def save_token(self, creds, user):
         """

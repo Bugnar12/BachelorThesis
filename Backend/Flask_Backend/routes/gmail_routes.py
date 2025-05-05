@@ -1,4 +1,3 @@
-import base64
 import json
 from datetime import timedelta
 
@@ -11,6 +10,7 @@ from config.config import GmailConfig
 from database import db
 from model.user import User
 from service.gmail_service import GmailService
+from utils import email_utils
 from utils.logs import get_logger
 
 gmail_bp = Blueprint("gmail", __name__, url_prefix="/gmail")
@@ -82,24 +82,23 @@ def gmail_callback():
     # modify this after testing -> increase the expiration time by a lot
     refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
 
-    return jsonify({
-        'access_token': access_token,
-        'refresh_token': refresh_token
-    })
+    return redirect(f"/dashboard?access_token={access_token}&refresh_token={refresh_token}")
 
 @gmail_bp.route("/notification", methods=["POST"])
 def fetch_gmail_notif():
-    envelope = request.get_json()
+    try:
+        envelope = request.get_json()
+        message = envelope.get("message")
+        decoded_data = email_utils.decode_data(message['data'])
+        parsed_data = json.loads(decoded_data)
 
-    # TODO: create nice utils function for those base64 encodings and move some of this logic into the service
-    message = envelope.get("message")
-    data = base64.b64decode(message['data'].encode('utf-8')).decode('utf-8')
-    parsed_data = json.loads(data)
+        email_address = parsed_data['emailAddress']
+        history_id = parsed_data['historyId']
 
-    email_address = parsed_data['emailAddress']
-    history_id = parsed_data['historyId']
+        gmail_service.process_notification(email_address, history_id)
+        logger.info("Gmail data received: {}".format(parsed_data))
 
-    gmail_service.process_notification(email_address, history_id)
-    logger.info("Gmail data received: {}".format(parsed_data))
-
-    return "Status 200", 200
+        return "Status 200", 200
+    except Exception as e:
+        logger.error("Error occurred in fetching gmail notifications: {}".format(e))
+        return jsonify({"error": "Failed to fetch gmail notifications"}), 500

@@ -1,13 +1,20 @@
 import base64
 import email
 import re
+from urllib.parse import urlparse
 import joblib
 from email import policy
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from unshortenit import UnshortenIt
+
 from database import db
 from model.user import User
-from utils.definitions import AI_MODEL_ABS_PATH
+from utils.definitions import AI_MODEL_ABS_PATH, URL_SHORTENERS
+from utils.logs import get_logger
+
+logger = get_logger()
 
 
 def parse_email(email_file_path):
@@ -106,3 +113,30 @@ def get_credentials_for_user(email_address):
 def extract_url_from_body(body):
     url_pattern = r"https?://[^\s]+"
     return re.findall(url_pattern, body)
+
+def decode_data(data):
+    try:
+        result_data = base64.b64decode(data.encode('utf-8')).decode('utf-8')
+        return result_data
+    except Exception as e:
+        raise e
+
+def is_url_shortened(url):
+    if isinstance(url, list):
+        url = url[0]
+    domain = urlparse(url).netloc.lower()
+    for short in URL_SHORTENERS:
+        if short in domain:
+            return True
+    return False
+
+def unshorten_url(url):
+    unshorten_obj = UnshortenIt()
+    try:
+        return unshorten_obj.unshorten(url[0])
+    except Exception as e:
+        logger.warning("Unshortening failed: {}".format(e))
+        return url[0]
+
+def extract_domain(url):
+    return urlparse(url).netloc

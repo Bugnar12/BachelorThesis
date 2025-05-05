@@ -1,3 +1,4 @@
 import jwt_auth
 
-def login_required
+def login_required():
+    pass

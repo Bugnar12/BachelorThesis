@@ -1,8 +1,9 @@
-from model.email import Email
 from repository.repository import Repository
 from service.classifier_service import ClassifierService
-from utils.email_utils import get_email_header, load_model, get_email_body
+from service.virustotal_service import VirusTotalService
+from utils.email_utils import load_model, extract_domain
 from utils.logs import get_logger
+from utils import email_utils
 
 logger = get_logger()
 
@@ -11,16 +12,27 @@ class EmailService:
         self.__repository = Repository(db_session)
         self.__model = load_model()
         self.__classifier = ClassifierService()
+        self.__vt_service = VirusTotalService()
 
     def predict_email_text(self, email_id):
-        email = Email.query.filter_by(email_id=email_id).first() # TODO: add this in the repository instead
+        email = self.__repository.get_email_by_id(email_id)
         email_body = email.email_body
-        probabilities = self.__model.predict_proba([email_body])[0]
+        url = email_utils.extract_url_from_body(email.email_body)
+        logger.info("URL: {}".format(url))
+        if email_utils.is_url_shortened(url):
+            logger.info("URL is shortened")
+            url = email_utils.unshorten_url(url)
+            logger.info("Unshortened URL: {}".format(url))
 
+        probabilities = self.__model.predict_proba([email_body])[0]
         prediction = "Potentially phishing email" if probabilities[1] >= 0.7 else "Safe email"
+        domain_from_url = extract_domain(url[0])
+        vt_dns_info = self.__vt_service.get_vt_dns_info(domain_from_url)
+        vt_report = self.__vt_service.get_vt_dns_report_results(vt_dns_info)
 
         return {
-            "prediction": prediction  # e.g., 'phishing' or 'safe'
+            "prediction": prediction,  # e.g. 'phishing' or 'safe'
+            "vt_prediction": vt_report,
         }
 
     def predict_url(self, url):

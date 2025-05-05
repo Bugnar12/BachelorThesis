@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+from utils.definitions import HF_MODEL_NAME
 from utils.logs import get_logger
 
 logger = get_logger()
@@ -8,7 +9,7 @@ logger = get_logger()
 
 class ClassifierService:
     def __init__(self):
-        self.model_name = r"CrabInHoney/urlbert-tiny-v4-phishing-classifier"
+        self.model_name = HF_MODEL_NAME
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
         self.labels = ["benign", "phishing"]
