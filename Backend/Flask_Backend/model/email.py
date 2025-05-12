@@ -17,6 +17,9 @@ class Email(db.Model):
     email_timestamp = db.Column(db.DateTime, default=datetime.now())
     user = db.relationship("User", backref="processed_emails")
 
+    text_prediction = db.Column(db.String, nullable=True)
+    url_prediction = db.Column(db.String, nullable=True)
+
     def __init__(self, user_id, gmail_message_id, email_sender, email_subject, email_recipient, email_body):
         self.user_id = user_id
         self.gmail_message_id = gmail_message_id
@@ -35,6 +38,8 @@ class Email(db.Model):
             "email_recipient": self.email_recipient,
             "email_body": self.email_body,
             "email_timestamp": self.email_timestamp.isoformat(),
+            "text_prediction": self.text_prediction,
+            "url_prediction": self.url_prediction,
         }
 
     def from_dict(self, data):

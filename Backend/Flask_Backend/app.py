@@ -1,6 +1,8 @@
 import os
 
 from flask import Flask, render_template
+from flask_cors import CORS
+from flask_migrate import Migrate
 
 from config.config import Config
 from database import db
@@ -8,6 +10,11 @@ from jwt_auth import jwt
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
+migrate = Migrate(app, db)
+
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:4200"}},
+     allow_headers=["Content-Type", "Authorization"])
+
 
 app.secret_key = Config.APP_SECRET_KEY
 app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY

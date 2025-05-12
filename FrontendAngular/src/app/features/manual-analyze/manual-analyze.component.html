@@ -1,0 +1,79 @@
+<app-header></app-header>
+
+<div *ngIf="showSessionExpiredMessage" class="session-expired-msg">
+  Your session has expired. Please log in again.
+</div>
+
+
+<div class="analyze-container mat-typography">
+  <!-- Login Box -->
+  <div class="login-box">
+    <h2>Welcome to Phishing Analyzer</h2>
+    <p>
+      Log in with your Gmail to view your scanned emails or use the tools below to analyze custom inputs.
+    </p>
+    <button mat-raised-button color="primary" (click)="handleLoginClick()">
+      Login with Gmail
+    </button>
+
+  </div>
+
+  <div class="analyze-box-wrapper">
+    <!-- Email Text Analysis -->
+    <div class="analyze-box">
+      <h3>Email Text Analysis</h3>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email content</mat-label>
+        <textarea matInput [(ngModel)]="emailText" placeholder="Paste email text here..." rows="6"></textarea>
+      </mat-form-field>
+
+      <button mat-raised-button color="accent" (click)="analyzeText()" [disabled]="isLoadingText || !emailText">
+        {{ isLoadingText ? 'Analyzing...' : 'Analyze Text' }}
+      </button>
+
+      <ng-container *ngIf="emailResult?.prediction as prediction">
+        <p>
+          Result:
+          <strong
+            [ngClass]="{
+              'safe': prediction.toLowerCase().includes('safe'),
+              'phishing': prediction.toLowerCase().includes('phishing')
+            }"
+          >
+            {{ prediction }}
+          </strong>
+        </p>
+      </ng-container>
+    </div>
+
+    <!-- URL Analysis -->
+    <div class="analyze-box">
+      <h3>URL Analysis</h3>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>URL</mat-label>
+        <input matInput type="text" [(ngModel)]="url" placeholder="Paste URL here..." />
+      </mat-form-field>
+
+      <button mat-raised-button color="accent" (click)="analyzeUrl()" [disabled]="isLoadingUrl || !url">
+        {{ isLoadingUrl ? 'Analyzing...' : 'Analyze URL' }}
+      </button>
+
+      <ng-container *ngIf="urlResult">
+        <p>
+          Result:
+          <strong
+            [ngClass]="{
+              'safe': urlResult.label === 'benign',
+              'phishing': urlResult.label === 'malicious'
+            }"
+          >
+            {{ urlResult.label || urlResult.prediction }}
+          </strong>
+          <span *ngIf="urlResult.score !== undefined">
+            (score: {{ urlResult.score | number: '1.2-2' }})
+          </span>
+        </p>
+      </ng-container>
+    </div>
+  </div>
+</div>

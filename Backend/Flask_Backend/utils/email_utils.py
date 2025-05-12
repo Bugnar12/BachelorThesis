@@ -1,6 +1,8 @@
 import base64
 import email
+import hashlib
 import re
+import tempfile
 from urllib.parse import urlparse
 import joblib
 from email import policy
@@ -42,17 +44,31 @@ def get_email_body(email_content):
     return body
 
 def extract_decode_email_body(email_payload):
-    if 'parts' in email_payload:
-        for part in email_payload['parts']:
-            # MIME can be text/plain or text/html
-            mime = part.get('mimeType')
-            data = part.get('body', {}).get('data')
-            if data:
-                decoded_text = base64.urlsafe_b64decode(data.encode('utf-8')).decode('utf-8')
-                if mime == 'text/plain':
-                    return decoded_text
-    elif 'body' in email_payload and 'data' in email_payload['body']:
-        return base64.urlsafe_b64decode(email_payload['body']['data'].encode('utf-8')).decode('utf-8')
+    stack = [email_payload]
+
+    while stack:
+        part = stack.pop()
+        mime = part.get('mimeType')
+        body = part.get('body', {})
+        data = body.get('data')
+
+        # Return decoded text if it's text/plain
+        if mime == 'text/plain' and data:
+            return base64.urlsafe_b64decode(data.encode('utf-8')).decode('utf-8')
+
+        # If this part is multipart, add its subparts to the stack
+        if 'parts' in part:
+            stack.extend(part['parts'])
+
+    # If no text/plain found, try top-level body
+    if 'body' in email_payload and 'data' in email_payload['body']:
+        data = email_payload['body']['data']
+        if isinstance(data, list):
+            data = data[0]
+        return base64.urlsafe_b64decode(data.encode('utf-8')).decode('utf-8')
+
+    return None
+
 
 def load_model():
     """Loads the AI model that predicts phishing based on email body and returns it."""
@@ -66,6 +82,7 @@ def build_credentials_for_user(user):
     gmail_token = user.gmail_token  # assuming one-to-one relationship via backref
 
     if not gmail_token:
+        # TODO: replace all f"" with .format()
         raise ValueError(f"No Gmail token found for user {user.user_email}")
 
     creds = Credentials(
@@ -116,13 +133,34 @@ def extract_url_from_body(body):
 
 def decode_data(data):
     try:
+        if isinstance(data, list):
+            # Take the first element or raise a meaningful error
+            data = data[0]
+        if not isinstance(data, str):
+            raise ValueError(f"Expected string for base64 decode, got {type(data)}: {data}")
+
+        logger.info("Result data: {}".format(data))
+
         result_data = base64.b64decode(data.encode('utf-8')).decode('utf-8')
         return result_data
     except Exception as e:
-        raise e
+        raise ValueError("Failed to decode base64 data: {}".format(e))
+
+def decode_data_padding(data):
+    if isinstance(data, list):
+        data = data[0]
+    if isinstance(data, str):
+        data = data.encode()
+    # Add padding if necessary
+    missing_padding = len(data) % 4
+    if missing_padding:
+        data += b'=' * (4 - missing_padding)
+    return base64.urlsafe_b64decode(data)
 
 def is_url_shortened(url):
     if isinstance(url, list):
+        if not url:
+            return False
         url = url[0]
     domain = urlparse(url).netloc.lower()
     for short in URL_SHORTENERS:
@@ -139,4 +177,16 @@ def unshorten_url(url):
         return url[0]
 
 def extract_domain(url):
-    return urlparse(url).netloc
+    # TODO: process multiple URLs
+    return urlparse(url[0]).netloc
+
+def compute_sha256(base64_data):
+    """Computes the SHA256 hash of a file."""
+    binary_data = base64.urlsafe_b64decode(base64_data.encode('utf-8'))
+    sha256_hash = hashlib.sha256(binary_data).hexdigest()
+
+    return sha256_hash
+
+def save_attachment_temp(decoded_bytes, filename):
+    with open(filename, "wb") as f:
+        f.write(decoded_bytes)

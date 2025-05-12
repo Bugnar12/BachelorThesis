@@ -1,0 +1,67 @@
+<app-header></app-header>
+
+<div class="dashboard mat-typography">
+  <h2>Your Scanned Emails</h2>
+
+  <!-- Manual Analyze Button -->
+  <div class="action-bar">
+    <button mat-raised-button color="primary" routerLink="/manual-analyze">
+      <mat-icon>psychology</mat-icon>
+      Manual Analyze
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <app-loading-spinner *ngIf="isLoading" message="Loading emails"></app-loading-spinner>
+
+  <!-- No Emails -->
+  <div *ngIf="emails?.length === 0 && !isLoading" class="no-emails">
+    <mat-card class="empty-card">
+      No emails found.
+    </mat-card>
+  </div>
+
+  <!-- Emails Accordion -->
+  <mat-accordion *ngIf="emails?.length && emails.length > 0" class="email-accordion">
+    <mat-expansion-panel *ngFor="let email of emails" class="email-panel" hideToggle>
+      <mat-expansion-panel-header>
+        <div class="panel-header-container">
+          <div class="panel-title">
+            <mat-icon class="email-icon">email</mat-icon>
+            {{ email.email_subject || '(No Subject)' }}
+          </div>
+          <div class="panel-description">
+            From: {{ email.email_sender }} | To: {{ email.email_recipient }}
+          </div>
+        </div>
+      </mat-expansion-panel-header>
+
+
+      <div class="email-detail">
+        <p><strong>Received:</strong> {{ email.email_timestamp }}</p>
+        <p><strong>Body:</strong> {{ email.email_body }}</p>
+        <p *ngIf="email.text_prediction"><strong>Text Prediction:</strong> {{ email.text_prediction }}</p>
+        <p *ngIf="isPredictionObject(email.url_prediction)">
+          <strong>URL Prediction:</strong>
+          <span class="badge" [ngClass]="email.url_prediction.label.toLowerCase()">
+            {{ email.url_prediction.label | titlecase }}
+          </span>
+          <span class="confidence">
+            ({{ email.url_prediction.score * 100 | number:'1.0-1' }}% confidence)
+          </span>
+        </p>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <!-- Pagination -->
+  <div class="pagination-controls" *ngIf="!isLoading && totalEmails > pageSize">
+    <button mat-stroked-button color="primary" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">
+      Previous
+    </button>
+    <span class="page-info">Page {{ currentPage }} of {{ getTotalPages }}</span>
+    <button mat-stroked-button color="primary" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage * pageSize >= totalEmails">
+      Next
+    </button>
+  </div>
+</div>

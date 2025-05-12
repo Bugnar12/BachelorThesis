@@ -29,4 +29,5 @@ class VAPIDConfig:
     VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY')
     VAPID_CLAIMS = {
         "sub": "mailto:eduardbugnaru@gmail.com"
+
     }

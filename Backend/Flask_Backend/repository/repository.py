@@ -62,6 +62,12 @@ class Repository:
         """
         return self.__db.query(Email).filter_by(email_id=email_id).first()
 
+    def get_emails_query_by_user(self, user_id):
+        """
+        Returns a query object for emails of a specific user, ordered by timestamp
+        """
+        return self.__db.query(Email).filter_by(user_id=user_id).order_by(Email.email_timestamp.desc())
+
     def save_token(self, creds, user):
         """
             Saves or updates the token for a user in the database

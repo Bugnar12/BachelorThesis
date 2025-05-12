@@ -1,5 +1,6 @@
 import json
 from datetime import timedelta
+from os import access
 
 from flask import Blueprint, redirect, session, request, jsonify
 from flask_jwt_extended import create_access_token
@@ -79,10 +80,15 @@ def gmail_callback():
     gmail_service.handle_oauth_callback(creds, user)
     # JWT authorization
     access_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=15))
+    logger.info("Access token log: {}".format(access_token))
     # modify this after testing -> increase the expiration time by a lot
     refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
 
-    return redirect(f"/dashboard?access_token={access_token}&refresh_token={refresh_token}")
+    # TODO: replace this
+    return redirect("http://localhost:4200/dashboard?access_token={}&refresh_token={}".format(
+        access_token, refresh_token)
+    )
+
 
 @gmail_bp.route("/notification", methods=["POST"])
 def fetch_gmail_notif():
@@ -100,5 +106,5 @@ def fetch_gmail_notif():
 
         return "Status 200", 200
     except Exception as e:
-        logger.error("Error occurred in fetching gmail notifications: {}".format(e))
+        logger.exception("Error occurred in fetching gmail notifications: {}".format(e))
         return jsonify({"error": "Failed to fetch gmail notifications"}), 500

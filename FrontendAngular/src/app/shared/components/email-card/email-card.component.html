@@ -1,0 +1,24 @@
+<div class="email-card">
+  <div class="email-header">
+    <strong>{{ email.email_subject }}</strong>
+    <span class="timestamp">{{ email.email_timestamp | date:'medium' }}</span>
+  </div>
+
+  <div class="email-meta">
+    <span><strong>From:</strong> {{ email.email_sender }}</span>
+    <span><strong>To:</strong> {{ email.email_recipient }}</span>
+  </div>
+
+  <div class="email-body">
+    {{ email.email_body | slice:0:200 }}...
+  </div>
+
+  <div class="email-tags">
+    <span class="tag phishing" [ngClass]="email.text_prediction?.includes('phishing') ? 'danger' : 'safe'">
+      {{ email.text_prediction || 'Unknown' }}
+    </span>
+    <span class="tag url" [ngClass]="email.url_prediction?.includes('malicious') ? 'danger' : 'safe'">
+      {{ email.url_prediction || 'No URL detected' }}
+    </span>
+  </div>
+</div>
