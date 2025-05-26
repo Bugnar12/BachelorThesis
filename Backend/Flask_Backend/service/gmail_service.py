@@ -42,12 +42,12 @@ class GmailService:
         decoded_body = email_utils.extract_decode_email_body(payload) or "No content"
 
         email_obj = Email(
-            user_id = user_id,
-            gmail_message_id = message_id,
-            email_sender = sender,
-            email_subject = subject,
-            email_recipient = recipient,
-            email_body = decoded_body
+            user_id=user_id,
+            gmail_message_id=message_id,
+            email_sender=sender,
+            email_subject=subject,
+            email_recipient=recipient,
+            email_body=decoded_body
         )
         self.__repository.save_email(email_obj)
 
@@ -72,27 +72,42 @@ class GmailService:
 
         return hashes
 
-
     def classify_email(self, email):
-        email_text_prediction = self.__email_service.predict_email_text(email.email_id)
-        logger.info("TEXT PREDICTION: {}".format(email_text_prediction))
-        email_url = email_utils.extract_url_from_body(email.email_body)
-        if email_url:
-            # First check if the URL is shortened and unshorten it if necessary, then predict
-            final_url = unshorten_url(email_url) if is_url_shortened(email_url) else email_url
-            email.url_prediction = self.__email_service.predict_url(final_url)
-            # TODO: make this a utils function later (the serialization)
-            email.url_prediction = json.dumps(email.url_prediction)
-            logger.info("URL PREDICTION: {}".format(email.url_prediction))
-            logger.info("vt: {}".format(self.__email_service.predict_url_virustotal(final_url)))
+        text_result = self.__email_service.predict_email_text(email.email_id)
+        text_pred_label = text_result.get("prediction", "").lower()
+        email.text_prediction = json.dumps(text_result)
+
+        url = email_utils.extract_url_from_body(email.email_body)
+        vt_label = "No URL"
+        url_label = "No URL"
+
+        if url:
+            final_url = unshorten_url(url) if is_url_shortened(url) else url
+
+            url_result = self.__email_service.predict_url(final_url)
+            url_label = url_result.get("label", "unknown").lower()
+            email.url_prediction = json.dumps(url_result)
+
+            vt_result = self.__email_service.predict_url_virustotal(final_url)
+            vt_pred_raw = vt_result.get("prediction", [])
+            vt_label = vt_pred_raw[0].lower() if isinstance(vt_pred_raw, list) and vt_pred_raw else "unknown"
+            email.vt_domain_prediction = vt_label
         else:
             logger.warning("No URL found in email body")
+
+        verdict = "legitimate"
+        if "phishing" in text_pred_label or "phishing" in url_label or "phishing" in vt_label:
+            verdict = "phishing"
+
+        email.final_verdict = verdict
+
+        logger.info(f"[Verdict] Final verdict for email {email.email_id}: {verdict}")
+
+        # notify user
         user = self.__repository.get_user_by_id(email.user_id)
         self.__push_service.notify_user_phishing_email(user, email.email_subject, email.email_sender)
 
-    """
-    Will process the push notification by extracting the whole email content from the history id
-    """
+        self.__repository.commit()
 
     def process_notification(self, email_address, history_id):
         user = self.__get_user_and_check_creds(email_address)
@@ -146,23 +161,13 @@ class GmailService:
             logger.exception("Failed to fetch Gmail history.: {}".format(e))
             return []
 
-
     def __process_messages(self, messages, service, user, email_address, history_id):
         try:
             for msg in messages:
                 email = self.extract_fields_and_save_email(msg, email_address, user.user_id)
-                # attachment_hashes = self.extract_and_hash_attachments(service, msg)
-                #
-                # if attachment_hashes:
-                #     data = email_utils.decode_data_padding(attachment_hashes[0])
-                #     save_attachment_temp(data, "temp_file.txt")
-                #     analysis_id = vt_service.check_file_hash("temp_file.txt")['data']['id']
-                #     logger.info(vt_service.get_analysis_report(analysis_id))
-
                 self.classify_email(email)
-        except Exception as e:
-            logger.exception("Error processing messages: {}".format(e))
-            history_id = user.last_history_id
-        finally:
             user.last_history_id = history_id
             db.session.commit()
+        except Exception as e:
+            logger.exception("Error processing messages: {}".format(e))
+            db.session.rollback()

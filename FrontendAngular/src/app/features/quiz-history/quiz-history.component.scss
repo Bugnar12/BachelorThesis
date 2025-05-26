@@ -1,0 +1,191 @@
+$primary-500: #1e88e5;
+$primary-700: #1565c0;
+$success: #43a047;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2f7, #dbe7f9);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* waves */
+.top-wave,
+.bottom-wave {
+  svg {
+    width: 100%;
+    display: block;
+    fill: #fff;
+  }
+  pointer-events: none;
+}
+
+/* banner */
+.session-expired-msg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.25rem;
+  background: #ffeaea;
+  color: #e53935;
+  font-weight: 600;
+}
+
+/* spinner */
+.loading {
+  margin: 6rem auto;
+  max-width: 220px;
+  text-align: center;
+  font-size: 1.05rem;
+  color: #000;
+
+  .spinner {
+    width: 42px;
+    height: 42px;
+    border: 5px solid #cbd5e1;
+    border-top-color: $primary-700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* wrapper + title */
+.history-wrapper {
+  max-width: 900px;
+  margin: 4rem auto 6rem;
+  padding: 0 1.25rem 2rem;
+}
+
+.history-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw + 1rem, 3rem);
+  margin-bottom: 3rem;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, $primary-700, $primary-500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* card */
+.history-card {
+  margin-bottom: 1.6rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 22px rgba(16, 38, 73, 0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(16, 38, 73, 0.18);
+  }
+
+  .card-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    .attempt-icon {
+      font-size: 2.1rem;
+      color: $primary-700;
+    }
+
+    .attempt-no {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #111;
+    }
+
+    .attempt-date {
+      font-size: 0.9rem;
+      color: #555;
+    }
+  }
+
+  .score-pill {
+    background: #e0e7ff;
+    color: #1e293b;
+    font-weight: 700;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    min-width: 80px;
+    text-align: center;
+
+    &.perfect {
+      background: $success;
+      color: #fff;
+    }
+  }
+}
+
+/* animation */
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.4s ease-out both;
+}
+
+/* dark-mode */
+@media (prefers-color-scheme: dark) {
+  :host {
+    background: linear-gradient(135deg, #101522, #1e2738);
+    color: #e8eaf6;
+  }
+
+  .history-card {
+    background: rgba(30, 35, 55, 0.9);
+    color: #e8eaf6;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+  }
+
+  .score-pill {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+
+    &.perfect {
+      background: $success;
+    }
+  }
+
+  .attempt-date {
+    color: #b0b8d0;
+  }
+
+  .loading .spinner {
+    border-color: #4b556b;
+    border-top-color: $primary-500;
+  }
+
+  .session-expired-msg {
+    background: #3c0d0d;
+    color: #ff8a80;
+  }
+}

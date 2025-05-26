@@ -17,7 +17,10 @@ class Config:
 
 class GmailConfig:
     CLIENT_SECRET_FILE = os.getenv('GMAIL_CLIENT_SECRET')
-    GMAIL_SCOPE = ['https://www.googleapis.com/auth/gmail.readonly']
+    GMAIL_SCOPE = ["https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "openid"
+    ]
     REDIRECT_URI = os.getenv('GMAIl_REDIRECT_URI', "http://localhost:5000/gmail/oauth2callback")
     GMAIL_SUBSCRIPTION_TOPIC = r"projects/infra-inkwell-454717-t0/topics/gmail-incoming-emails"
 
@@ -29,5 +32,5 @@ class VAPIDConfig:
     VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY')
     VAPID_CLAIMS = {
         "sub": "mailto:eduardbugnaru@gmail.com"
-
     }
+    FCM_API_KEY = os.getenv('FCM_API_KEY')

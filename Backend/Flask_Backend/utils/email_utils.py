@@ -2,18 +2,24 @@ import base64
 import email
 import hashlib
 import re
-import tempfile
-from urllib.parse import urlparse
+import string
 import joblib
-from email import policy
+import requests
+import spacy
 
+from urllib.parse import urlparse, parse_qs, unquote
+from email import policy
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+
+from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from unshortenit import UnshortenIt
 
 from database import db
 from model.user import User
-from utils.definitions import AI_MODEL_ABS_PATH, URL_SHORTENERS
+from utils.definitions import AI_MODEL_ABS_PATH, URL_SHORTENERS, IMAGE_EXTENSIONS
 from utils.logs import get_logger
 
 logger = get_logger()
@@ -131,6 +137,65 @@ def extract_url_from_body(body):
     url_pattern = r"https?://[^\s]+"
     return re.findall(url_pattern, body)
 
+def extract_urls_from_body(body):
+    logger.info("Raw HTML Body: {}".format(body))
+    urls = set()
+
+    plain_urls = re.findall(r'https?://[^\s\'"<>]+', body)
+    urls.update(plain_urls)
+    try:
+        soup = BeautifulSoup(body, 'html.parser')
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href']
+            if href.startswith('http'):
+                urls.add(href)
+    except Exception as e:
+        logger.warning("Failed to parse HTML body: {}".format(e))
+
+    return list(urls)
+
+def postprocess_urls(urls: list) -> list:
+    cleaned = set()
+
+    for url in urls:
+        url = unquote(url.strip())
+
+        # Skip base64 images or image URLs
+        if url.startswith("data:") or any(url.lower().endswith(ext) for ext in IMAGE_EXTENSIONS):
+            continue
+
+        # Google redirect wrapper
+        if "google.com/url?q=" in url:
+            parsed = urlparse(url)
+            qs = parse_qs(parsed.query)
+            real_url = qs.get("q", [None])[0]
+            if real_url:
+                url = unquote(real_url)
+
+        # Googleusercontent proxy images
+        if "googleusercontent.com" in url and "#http" in url:
+            parts = url.split("#")
+            if len(parts) > 1 and parts[1].startswith("http"):
+                url = parts[1]
+
+        # Skip known CDN image hosts
+        if re.search(r"\.(png|jpg|jpeg|webp|gif|svg)(\?|$)", url, re.IGNORECASE):
+            continue
+
+        # Final check — only keep http(s) links
+        if url.startswith("http"):
+            cleaned.add(url)
+
+    return list(cleaned)
+
+def resolve_redirect_url(url: str, timeout: int = 3) -> str:
+    try:
+        resp = requests.head(url, allow_redirects=True, timeout=timeout)
+        return resp.url  # Final destination
+    except Exception as e:
+        logger.warning(f"Redirect resolution failed for {url}: {e}")
+        return url  # Fallback: return original if resolution fails
+
 def decode_data(data):
     try:
         if isinstance(data, list):
@@ -190,3 +255,30 @@ def compute_sha256(base64_data):
 def save_attachment_temp(decoded_bytes, filename):
     with open(filename, "wb") as f:
         f.write(decoded_bytes)
+
+
+def preprocess_text(text):
+    nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])
+    nlp.max_length = 2_000_000_000
+    stopwords_set = set(stopwords.words("english"))
+    if not isinstance(text, str) or text.strip() == "":
+        return ""
+
+    text = text.lower()
+
+    # Remove HTTP URLs
+    text = re.sub(r'http\S+', '', text)
+    # Remove digits
+    text = re.sub(r'\d+', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    # Remove special characters and punctuation
+    text = text.translate(str.maketrans("", "", string.punctuation))
+
+    # NLTK tokenization
+    tokens = word_tokenize(text)
+    tokens = [word for word in tokens if word not in stopwords_set]
+
+    # Spacy lemmatization
+    doc = nlp(" ".join(tokens))
+    lemmatized_tokens = [token.lemma_ for token in doc]
+    return " ".join(lemmatized_tokens)

@@ -9,4 +9,5 @@ export interface Email {
   email_timestamp: string;
   text_prediction?: string | Prediction;
   url_prediction?: string | Prediction;
+  vt_domain_result?: string;
 }

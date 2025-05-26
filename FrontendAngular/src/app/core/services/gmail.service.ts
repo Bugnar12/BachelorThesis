@@ -2,6 +2,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Email } from '../../shared/models/email';
+import {EmailStats} from '../../shared/models/email-stats';
 
 @Injectable({ providedIn: 'root' })
 export class GmailService {
@@ -28,4 +29,11 @@ export class GmailService {
     );
   }
 
+  reportFalsePositive(emailId: number) {
+    return this.http.post(`${this.baseUrl}/emails/report-fp`, { email_id: emailId });
+  }
+
+  getEmailStats(): Observable<EmailStats> {
+    return this.http.get<EmailStats>(`${this.baseUrl}/emails/stats`);
+  }
 }

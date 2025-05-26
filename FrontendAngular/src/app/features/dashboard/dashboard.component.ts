@@ -29,7 +29,7 @@ import {Prediction} from '../../shared/models/prediction';
     TitleCasePipe,
     DecimalPipe
   ],
-  styleUrls: ['./dashboard.component.css'],
+  styleUrls: ['./dashboard.component.scss'],
   standalone: true
 })
 export class DashboardComponent implements OnInit {
@@ -76,7 +76,8 @@ export class DashboardComponent implements OnInit {
         this.emails = response.emails.map(email => ({
           ...email,
           url_prediction: this.tryParsePrediction(email.url_prediction),
-          text_prediction: this.tryParsePrediction(email.text_prediction)
+          text_prediction: this.tryParsePrediction(email.text_prediction),
+          vt_domain_result: this.tryParsePrediction(email.vt_domain_result)
         }));
 
         this.totalEmails = response.total;
@@ -108,16 +109,36 @@ export class DashboardComponent implements OnInit {
     return typeof pred !== 'string' && !!pred && 'label' in pred && 'score' in pred;
   }
 
-  private tryParsePrediction(input: string | Prediction | undefined): Prediction | string | undefined {
+  private tryParsePrediction(input: string | any): any {
     if (typeof input === 'string' && input.trim().startsWith('{')) {
       try {
-        return JSON.parse(input);
+        const parsed = JSON.parse(input);
+
+        // Special case for VirusTotal-style prediction
+        if ('prediction' in parsed && Array.isArray(parsed.prediction)) {
+          return parsed.prediction[0]; // e.g., "safe"
+        }
+
+        return parsed;
       } catch {
         return input;
       }
     }
+
     return input;
   }
 
+  reportFalsePositive(emailId: number): void {
+    this.gmailService.reportFalsePositive(emailId).subscribe({
+      next: () => {
+        console.log(`[Report FP] Email #${emailId} reported as false positive`);
+        alert('Thank you! We will review the flagged email.');
+      },
+      error: (err) => {
+        console.error('[Report FP] Failed to report:', err);
+        alert('Failed to send report. Please try again later.');
+      }
+    });
+  }
 
 }

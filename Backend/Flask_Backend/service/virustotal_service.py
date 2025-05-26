@@ -16,6 +16,8 @@ class VirusTotalService:
         self.__base_url = definitions.VT_BASE_URL
 
     def get_vt_dns_info(self, domain):
+        if isinstance(domain, list):
+            domain = domain[0]
         domain = domain.replace("https://", "").replace("http://", "").strip("/")
         vt_url_endpoint = "{}/domains/{}".format(self.__base_url, domain)
         headers = {

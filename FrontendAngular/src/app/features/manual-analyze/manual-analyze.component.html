@@ -1,79 +1,150 @@
 <app-header></app-header>
 
-<div *ngIf="showSessionExpiredMessage" class="session-expired-msg">
+<div
+  *ngIf="showSessionExpiredMessage"
+  class="session-expired-msg animate-slide-down"
+>
+  <mat-icon aria-hidden="true">error</mat-icon>
   Your session has expired. Please log in again.
 </div>
 
 
+<section class="hero">
+  <div class="hero-inner">
+    <!-- copy -->
+    <div class="hero-copy">
+      <h1 class="gradient-text">Phishing Analyzer</h1>
+      <p class="subtitle">
+        Stay safe online – scan suspicious emails &amp; links in seconds.
+      </p>
+
+      <button
+        mat-raised-button
+        class="action-button"
+        type="button"
+        (click)="handleLoginClick()"
+      >
+        <mat-icon aria-hidden="true">login</mat-icon>
+        Login with Gmail
+      </button>
+    </div>
+
+    <img
+      src="assets/security_illustration.png"
+      alt="Abstract security illustration"
+      class="hero-ill animate-float"
+    />
+  </div>
+
+
+  <svg viewBox="0 0 1440 120" class="wave" aria-hidden="true"
+  ><path d="M0,80 C360,140 1080,20 1440,80 L1440,120 L0,120 Z" /></svg
+  >
+</section>
+
 <div class="analyze-container mat-typography">
-  <!-- Login Box -->
-  <div class="login-box">
-    <h2>Welcome to Phishing Analyzer</h2>
-    <p>
-      Log in with your Gmail to view your scanned emails or use the tools below to analyze custom inputs.
-    </p>
-    <button mat-raised-button color="primary" (click)="handleLoginClick()">
-      Login with Gmail
-    </button>
+  <mat-card class="analyze-card" appearance="outlined">
+    <mat-tab-group animationDuration="400ms">
+      <mat-tab>
+        <ng-template matTabLabel>
+          <mat-icon aria-hidden="true">mail</mat-icon>
+          Email&nbsp;Text
+        </ng-template>
 
-  </div>
+        <section class="tab-body">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email content</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="emailText"
+              placeholder="[Enter email body]"
+              rows="6"
+            ></textarea>
+          </mat-form-field>
 
-  <div class="analyze-box-wrapper">
-    <!-- Email Text Analysis -->
-    <div class="analyze-box">
-      <h3>Email Text Analysis</h3>
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Email content</mat-label>
-        <textarea matInput [(ngModel)]="emailText" placeholder="Paste email text here..." rows="6"></textarea>
-      </mat-form-field>
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="analyzeText()"
+            [disabled]="isLoadingText || !emailText"
+          >
+            <mat-progress-spinner
+              *ngIf="isLoadingText"
+              mode="indeterminate"
+              diameter="20"
+            ></mat-progress-spinner>
+            <ng-container *ngIf="!isLoadingText">Analyze Text</ng-container>
+          </button>
 
-      <button mat-raised-button color="accent" (click)="analyzeText()" [disabled]="isLoadingText || !emailText">
-        {{ isLoadingText ? 'Analyzing...' : 'Analyze Text' }}
-      </button>
-
-      <ng-container *ngIf="emailResult?.prediction as prediction">
-        <p>
-          Result:
-          <strong
+          <div
+            *ngIf="emailResult?.prediction as prediction"
+            class="prediction-result"
             [ngClass]="{
-              'safe': prediction.toLowerCase().includes('safe'),
-              'phishing': prediction.toLowerCase().includes('phishing')
+              phishing: prediction.toLowerCase().includes('phishing'),
+              safe: prediction.toLowerCase().includes('safe')
             }"
           >
-            {{ prediction }}
-          </strong>
-        </p>
-      </ng-container>
-    </div>
+            <mat-icon aria-hidden="true">
+              {{ prediction.toLowerCase().includes('phishing')
+              ? 'warning'
+              : 'verified_user' }}
+            </mat-icon>
+            <strong>{{ prediction }}</strong>
+          </div>
+        </section>
+      </mat-tab>
 
-    <!-- URL Analysis -->
-    <div class="analyze-box">
-      <h3>URL Analysis</h3>
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>URL</mat-label>
-        <input matInput type="text" [(ngModel)]="url" placeholder="Paste URL here..." />
-      </mat-form-field>
+      <mat-tab>
+        <ng-template matTabLabel>
+          <mat-icon aria-hidden="true">link</mat-icon>
+          URL&nbsp;Check
+        </ng-template>
 
-      <button mat-raised-button color="accent" (click)="analyzeUrl()" [disabled]="isLoadingUrl || !url">
-        {{ isLoadingUrl ? 'Analyzing...' : 'Analyze URL' }}
-      </button>
+        <section class="tab-body">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>URL</mat-label>
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="url"
+              placeholder="[https://example.com]"
+            />
+          </mat-form-field>
 
-      <ng-container *ngIf="urlResult">
-        <p>
-          Result:
-          <strong
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="analyzeUrl()"
+            [disabled]="isLoadingUrl || !url"
+          >
+            <mat-progress-spinner
+              *ngIf="isLoadingUrl"
+              mode="indeterminate"
+              diameter="20"
+            ></mat-progress-spinner>
+            <ng-container *ngIf="!isLoadingUrl">Analyze URL</ng-container>
+          </button>
+
+          <div
+            *ngIf="urlResult"
+            class="prediction-result"
             [ngClass]="{
-              'safe': urlResult.label === 'benign',
-              'phishing': urlResult.label === 'malicious'
+              phishing: urlResult.label === 'malicious',
+              safe: urlResult.label === 'benign'
             }"
           >
-            {{ urlResult.label || urlResult.prediction }}
-          </strong>
-          <span *ngIf="urlResult.score !== undefined">
-            (score: {{ urlResult.score | number: '1.2-2' }})
-          </span>
-        </p>
-      </ng-container>
-    </div>
-  </div>
+            <mat-icon aria-hidden="true">
+              {{ urlResult.label === 'malicious' ? 'report' : 'public' }}
+            </mat-icon>
+            <strong>{{ urlResult.label || urlResult.prediction }}</strong>
+            <span *ngIf="urlResult.score !== undefined">
+              (score: {{ urlResult.score | number: '1.2-2' }})
+            </span>
+          </div>
+        </section>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
 </div>

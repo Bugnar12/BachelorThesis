@@ -1,0 +1,67 @@
+<app-header></app-header>
+
+<div *ngIf="showSessionExpiredMessage" class="session-expired-msg animate-slide-down">
+  <mat-icon aria-hidden="true">error</mat-icon>
+  Your session has expired. Please log in again.
+</div>
+
+<div class="top-wave" aria-hidden="true">
+  <svg viewBox="0 0 1440 120"><path d="M0,80 C480,20 960,140 1440,60 L1440,0 L0,0 Z" /></svg>
+</div>
+
+<div *ngIf="loading" class="loading">
+  <div class="spinner"></div>
+  Loading history…
+</div>
+
+<div *ngIf="!loading && attempts.length > 0" class="history-wrapper mat-typography">
+  <h1 class="history-title gradient-text">Quiz&nbsp;History</h1>
+
+  <mat-card *ngFor="let a of attempts" class="history-card">
+    <div class="card-inner">
+      <div class="left">
+        <mat-icon class="attempt-icon" aria-hidden="true">schedule</mat-icon>
+        <div>
+          <div class="attempt-no">Attempt&nbsp;#{{ a.attempt_no }}</div>
+          <div class="attempt-date">{{ a.timestamp | date:'medium' }}</div>
+        </div>
+      </div>
+
+      <div class="score-pill" [ngClass]="{ perfect: a.score === a.total }">
+        {{ a.score }} / {{ a.total }}
+      </div>
+    </div>
+
+    <!-- ⬇️ Expandable section for question details -->
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          View questions and answers
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div *ngFor="let q of a.questions" class="question-block">
+        <p><strong>Q:</strong> {{ q.text }}</p>
+        <p>
+          <strong>Your answer:</strong>
+          <span [ngClass]="{
+            'correct-answer': q.userAnswer === q.correctAnswer,
+            'wrong-answer': q.userAnswer !== q.correctAnswer
+          }">
+            {{ q.userAnswer }}
+          </span>
+        </p>
+        <p><strong>Correct answer:</strong> {{ q.correctAnswer }}</p>
+        <mat-divider></mat-divider>
+      </div>
+    </mat-expansion-panel>
+  </mat-card>
+</div>
+
+<div *ngIf="!loading && attempts.length === 0" class="history-wrapper mat-typography">
+  <h2>No quiz attempts found.</h2>
+</div>
+
+<div class="bottom-wave" aria-hidden="true">
+  <svg viewBox="0 0 1440 120"><path d="M0,40 C360,120 1080,0 1440,80 L1440,120 L0,120 Z" /></svg>
+</div>

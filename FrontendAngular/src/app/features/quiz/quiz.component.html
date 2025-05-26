@@ -1,0 +1,69 @@
+<app-header></app-header>
+
+<div *ngIf="showSessionExpiredMessage" class="session-expired-msg animate-slide-down">
+  <mat-icon aria-hidden="true">error</mat-icon>
+  Your session has expired. Please log in again.
+</div>
+
+<div class="top-wave" aria-hidden="true">
+  <svg viewBox="0 0 1440 120"><path d="M0,80 C480,20 960,140 1440,60 L1440,0 L0,0 Z" /></svg>
+</div>
+
+<div *ngIf="loading" class="loading">
+  <div class="spinner"></div>
+  Loading quiz…
+</div>
+
+<div *ngIf="!loading && questions.length > 0" class="quiz-wrapper mat-typography">
+  <h1 class="quiz-title">Phishing General Knowledge Quiz</h1>
+
+  <mat-card *ngFor="let question of questions; index as i" class="question-card">
+    <mat-card-title>
+      <span class="q-number">Q{{ i + 1 }}</span>
+      {{ question.question }}
+    </mat-card-title>
+
+    <mat-radio-group
+      class="options"
+      [(ngModel)]="selectedAnswers[question.id]"
+      (change)="selectAnswer(question.id, selectedAnswers[question.id])"
+      [disabled]="submitted">
+
+      <!-- value IS the key exactly as received, e.g. 'option_b' -->
+      <mat-radio-button
+        *ngFor="let opt of question.options | keyvalue"
+        [value]="opt.key"
+        class="option">
+
+        <span class="option-text">
+          <span class="opt-key">{{ opt.key.slice(-1) | uppercase }}.</span> {{ opt.value }}
+        </span>
+
+        <ng-container *ngIf="submitted">
+          <mat-icon *ngIf="opt.key === question.correct_answer"
+                    class="indicator correct"
+                    aria-hidden="true">check_circle</mat-icon>
+
+          <mat-icon *ngIf="opt.key === selectedAnswers[question.id] && opt.key !== question.correct_answer"
+                    class="indicator wrong"
+                    aria-hidden="true">cancel</mat-icon>
+        </ng-container>
+      </mat-radio-button>
+
+    </mat-radio-group>
+  </mat-card>
+
+  <button mat-raised-button color="primary" type="button" class="submit-btn"
+          (click)="submitQuiz()" [disabled]="submitted">
+    Submit Quiz
+  </button>
+
+  <div *ngIf="submitted" class="score-card">
+    <h2>Your Score</h2>
+    <p>{{ score }} / {{ total }}</p>
+  </div>
+</div>
+
+<div class="bottom-wave" aria-hidden="true">
+  <svg viewBox="0 0 1440 120"><path d="M0,40 C360,120 1080,0 1440,80 L1440,120 L0,120 Z" /></svg>
+</div>

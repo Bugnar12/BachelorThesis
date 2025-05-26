@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Gmail Phishing Detector",
+  "version": "1.0",
+  "description": "Detects phishing in currently opened Gmail email.",
+  "permissions": ["scripting", "tabs", "activeTab", "contextMenus", "storage"],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "http://localhost:5000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

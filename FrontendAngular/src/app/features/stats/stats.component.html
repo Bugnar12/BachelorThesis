@@ -1,0 +1,40 @@
+<h1 class="stats-title">Email&nbsp;Statistics</h1>
+
+<mat-card class="stats-card" *ngIf="stats as s">
+  <div class="totals">
+    <div class="totals-item">
+      <mat-icon class="totals-icon total" aria-hidden="true">all_inbox</mat-icon>
+      <span class="label">Total</span>
+      <span class="value">{{ s.total }}</span>
+    </div>
+
+    <div class="totals-item">
+      <mat-icon class="totals-icon phishing" aria-hidden="true">warning</mat-icon>
+      <span class="label phishing">Phishing</span>
+      <span class="value">{{ s.phishing }} ({{ phishingPercentage }}%)</span>
+    </div>
+
+    <div class="totals-item">
+      <mat-icon class="totals-icon safe" aria-hidden="true">verified_user</mat-icon>
+      <span class="label safe">Legitimate</span>
+      <span class="value">{{ s.legitimate }}</span>
+    </div>
+  </div>
+
+  <h3 class="section-h">Detections by Method</h3>
+  <div class="chart-box pie">
+    <canvas baseChart
+            [data]="pieChartData"
+            [type]="pieChartType">
+    </canvas>
+  </div>
+
+  <h3 class="section-h">Emails in Last&nbsp;30&nbsp;Days</h3>
+  <div class="chart-box timeline">
+    <canvas baseChart
+            [data]="lineChartData"
+            [type]="lineChartType"
+            [options]="lineChartOptions">
+    </canvas>
+  </div>
+</mat-card>

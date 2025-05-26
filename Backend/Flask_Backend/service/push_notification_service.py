@@ -10,12 +10,11 @@ class PushNotificationService:
     def __init__(self, db_session):
         self.db_session = db_session
 
-    def send_notification(self, subscription_info, title, body, url="http://localhost:4200/manual-analyze"):
+    def send_notification(self, subscription_info, title, body):
         try:
             payload = json.dumps({
                 "title": title,
-                "body": body,
-                "url": url
+                "body": body
             })
 
             webpush(
@@ -27,16 +26,16 @@ class PushNotificationService:
 
             logger.info("Push notification sent successfully.")
         except WebPushException as ex:
-            logger.error("Push notification failed: {}".format(ex))
+            logger.exception("Push notification failed: {}".format(ex))
 
     def notify_user_phishing_email(self, user, email_subject, email_sender):
         if not user.push_subscription:
             logger.warning("User {} does not have a push subscription.".format(user.user_email))
             return
 
+        logger.info("user push subscription: {}".format(user.push_subscription))
         self.send_notification(
             subscription_info=json.loads(user.push_subscription),
             title="!!! Suspicious Email Detected !!!",
             body="From {}: {}".format(email_sender, email_subject),
-            url="http://localhost:4200/manual-analyze"
         )

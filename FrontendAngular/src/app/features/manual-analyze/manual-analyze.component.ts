@@ -9,6 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { jwtDecode } from 'jwt-decode';
 import {ActivatedRoute} from '@angular/router';
+import {MatIcon} from '@angular/material/icon';
+import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-analyze',
@@ -20,10 +23,15 @@ import {ActivatedRoute} from '@angular/router';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIcon,
+    MatTabGroup,
+    MatTab,
+    MatProgressSpinner,
+    MatTabLabel,
   ],
   templateUrl: './manual-analyze.component.html',
-  styleUrls: ['./manual-analyze.component.css']
+  styleUrls: ['./manual-analyze.component.scss']
 })
 export class ManualAnalyzeComponent {
   emailText = '';

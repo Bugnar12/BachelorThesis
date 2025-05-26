@@ -3,11 +3,13 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from database import db
 from service.email_service import EmailService
+from service.stats_service import EmailStatsService
 from utils.logs import get_logger
 
 email_bp = Blueprint("emails", __name__, url_prefix="/emails")
 
 email_service = EmailService(db.session)
+stats_service = EmailStatsService(db.session)
 logger = get_logger()
 
 @email_bp.route("/predict_text", methods=["POST"])
@@ -50,7 +52,39 @@ def get_emails():
         "page_size": page_size
     }), 200
 
+@email_bp.route('/predict/email', methods=['POST'])
+def predict_email_from_extension():
+    data = request.get_json()
+    subject = data.get('subject', '')
+    sender = data.get('sender', '')
+    body = data.get('body', '')
+
+    # Call your existing EmailService or prediction logic
+    result = email_service.predict_from_extension(subject, sender, body)
+
+    logger.info("VirusTotal prediction: {}".format(result["vt_prediction"]))
+
+    return jsonify({
+        "text_prediction": result["text_prediction"],
+        "url_prediction": result["url_prediction"],
+        "vt_prediction": result["vt_prediction"],
+        "verdict": result["verdict"]
+    })
+
+
 @email_bp.route("/get_dns_info", methods=["GET"])
 def get_dns_info(url):
     # return email_service.vt_dns_info(url)
     pass
+
+@email_bp.route("/report-fp", methods=["POST"])
+def report_false_positive():
+    data = request.get_json()
+    logger.info(f"[USER REPORT] False Positive reported: {data}")
+    return jsonify({"status": "ok"}), 200
+
+@email_bp.route('/stats', methods=['GET'])
+@jwt_required()
+def get_email_stats():
+    user_id = get_jwt_identity()
+    return EmailStatsService().get_summary_for_user(user_id)

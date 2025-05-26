@@ -1,6 +1,11 @@
+from sqlalchemy import func
+
 from model.email import Email
 from model.gmail_token import GmailToken
+from model.quiz_attempt import QuizAttempt
+from model.quiz_question import QuizQuestion
 from model.user import User
+from model.user_quiz_answers import UserQuizAnswer
 from utils.logs import get_logger
 
 logger = get_logger()
@@ -88,4 +93,46 @@ class Repository:
             token = GmailToken.from_credentials(user.user_id, creds)
 
         self.__db.add(token)
+        self.__db.commit()
+
+    def get_all_quiz_questions(self):
+        return self.__db.query(QuizQuestion).all()
+
+    def get_quiz_question_by_id(self, question_id):
+        return self.__db.query(QuizQuestion).filter_by(id=question_id).first()
+
+    def get_quiz_questions_by_difficulty(self, difficulty):
+        return self.__db.query(QuizQuestion).filter_by(difficulty=difficulty).all()
+
+    def add_quiz_question(self, question):
+        self.__db.add(question)
+        self.__db.commit()
+        return question
+
+    def delete_quiz_question(self, question_id):
+        question = self.get_quiz_question_by_id(question_id)
+        if question:
+            self.__db.delete(question)
+            self.__db.commit()
+        return question
+
+    ###### QUIZ SECTION ######
+
+    def fetch_random_questions(self, limit=10):
+        return self.__db.query(QuizQuestion).order_by(func.random()).limit(limit).all()
+
+    def fetch_question_by_id(self, question_id):
+        return self.__db.query(QuizQuestion).get(question_id)
+
+    def fetch_user_attempts(self, user_id):
+        return self.__db.query(QuizAttempt).filter_by(user_id=user_id).order_by(
+            QuizAttempt.timestamp.asc()).all()
+
+    def fetch_answers_for_attempt(self, attempt_id):
+        return self.__db.query(UserQuizAnswer).filter_by(attempt_id=attempt_id).all()
+
+    def fetch_questions_by_ids(self, question_ids):
+        return self.__db.query(QuizQuestion).filter(QuizQuestion.id.in_(question_ids)).all()
+
+    def commit(self):
         self.__db.commit()

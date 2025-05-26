@@ -12,9 +12,8 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
 migrate = Migrate(app, db)
 
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:4200"}},
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}},
      allow_headers=["Content-Type", "Authorization"])
-
 
 app.secret_key = Config.APP_SECRET_KEY
 app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY
@@ -28,11 +27,13 @@ def register_blueprints(app):
     from routes.gmail_routes import gmail_bp
     from routes.push_routes import push_bp
     from routes.user_routes import user_bp
+    from routes.quiz_routes import quiz_bp
 
     app.register_blueprint(email_bp)
     app.register_blueprint(gmail_bp)
     app.register_blueprint(push_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(quiz_bp)
 
 register_blueprints(app)
 

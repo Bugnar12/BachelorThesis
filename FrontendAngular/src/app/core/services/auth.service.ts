@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.clear();
+    this.clearTokens();
   }
 
   clearTokens(): void {

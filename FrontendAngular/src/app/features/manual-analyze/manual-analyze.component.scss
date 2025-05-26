@@ -1,0 +1,225 @@
+$primary-100: #d1e2ff;
+$primary-500: #1e88e5;
+$primary-700: #1565c0;
+
+$danger-400: #ef5350;
+$danger-500: #e53935;
+$success-400: #66bb6a;
+$success-500: #43a047;
+
+:host {
+  display: block;
+  min-height: 100svh;
+  background: var(--bg, #fafbfd);
+  color: #000;
+  overflow-x: hidden;
+  --card-blur: blur(12px);
+}
+
+mat-form-field input,
+mat-form-field textarea {
+  color: #000 !important;
+}
+
+
+.session-expired-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffeaea;
+  padding: 0.75rem 1.25rem;
+  color: $danger-500;
+  font-weight: 600;
+  justify-content: center;
+}
+
+
+.hero {
+  background: linear-gradient(160deg, $primary-700 0%, $primary-500 100%);
+  padding: clamp(4rem, 10vw, 7rem) 1.5rem 6rem;
+  color: #fff;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+
+  .hero-inner {
+    max-width: 1100px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: 1fr minmax(280px, 420px);
+    align-items: center;
+    gap: 2rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+
+    h1 {
+      font-size: clamp(2.75rem, 5vw + 1rem, 4rem);
+      line-height: 1.1;
+    }
+    .subtitle {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      max-width: 35ch;
+    }
+  }
+
+  .action-button {
+    background: #fff;
+    color: $primary-700;
+    font-weight: 700;
+    padding-inline: 2rem;
+    border-radius: 9999px;
+    transition: transform 0.25s ease-in-out;
+    mat-icon {
+      margin-right: 0.25rem;
+    }
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  .hero-ill {
+    width: 100%;
+    max-width: 420px;
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.2));
+  }
+
+  .wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    fill: var(--bg, #fafbfd);
+    pointer-events: none; /* never blocks clicks below */
+  }
+}
+
+/* ─────────  ANALYSIS CARD  ───────── */
+.analyze-container {
+  display: flex;
+  justify-content: center;
+  margin-top: -4rem;
+  padding: 0 1.25rem 4rem;
+}
+
+.analyze-card {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--card-blur);
+  box-shadow: 0 8px 28px rgba(16, 38, 73, 0.15);
+  overflow: hidden;
+
+  @media (max-width: 599px) {
+    border-radius: 12px;
+  }
+
+  mat-tab-group {
+    --mdc-tab-indicator-color: #1e88e5;
+    .mdc-tab__text-label {
+      font-weight: 600;
+      text-transform: none;
+    }
+  }
+
+  .tab-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem 2.5rem 2.5rem;
+
+    @media (max-width: 599px) {
+      padding: 1.5rem;
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.prediction-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.05);
+  color: #222;
+
+  &.phishing {
+    color: $danger-500;
+    background: rgba($danger-400, 0.15);
+  }
+  &.safe {
+    color: $success-500;
+    background: rgba($success-400, 0.15);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-down {
+  animation: slide-down 400ms ease-out both;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --bg: #101322;
+    color: #e8eaf6;
+  }
+  .hero {
+    background: linear-gradient(160deg, #1e3a8a 0%, #1e40af 100%);
+  }
+  .analyze-card {
+    background: rgba(30, 35, 55, 0.75);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  }
+  .prediction-result {
+    background: rgba(255, 255, 255, 0.04);
+    &.phishing {
+      color: #ff5252;
+      background: rgba(#ff5252, 0.16);
+    }
+    &.safe {
+      color: #8bc34a;
+      background: rgba(#8bc34a, 0.16);
+    }
+  }
+  .session-expired-msg {
+    background: #3c0d0d;
+    color: #ff8a80;
+  }
+}

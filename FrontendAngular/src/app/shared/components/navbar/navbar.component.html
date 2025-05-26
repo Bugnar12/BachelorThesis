@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+  <span class="app-title">PhishGuard</span>
+
+  <span class="spacer"></span>
+
+  <a mat-button routerLink="/dashboard">Dashboard</a>
+  <a mat-button routerLink="/manual-analyze">Manual Analyze</a>
+  <a mat-button routerLink="/quiz">Quiz</a>
+  <a mat-button routerLink="/quiz-history">Quiz History</a>
+  <a mat-button routerLink="/stats">Stats</a>
+
+  <button mat-icon-button class="logout-btn" (click)="logout()" aria-label="Logout">
+    <mat-icon>logout</mat-icon>
+  </button>
+
+</mat-toolbar>

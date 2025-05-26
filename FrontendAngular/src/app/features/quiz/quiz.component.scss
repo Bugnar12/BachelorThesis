@@ -1,0 +1,98 @@
+$primary-500:#1e88e5;
+$primary-700:#1565c0;
+$correct:#43a047;
+$wrong:#e53935;
+
+:root{
+  --mdc-theme-text-primary-on-background:#000;
+  --mdc-theme-text-secondary-on-background:#000;
+}
+
+:host{
+  display:block;
+  min-height:100vh;
+  background:linear-gradient(135deg,#eef2f7 0%,#dbe7f9 100%);
+  font-family:'Segoe UI',Roboto,sans-serif;
+  overflow-x:hidden
+}
+
+.top-wave,.bottom-wave{
+  svg{width:100%;display:block;fill:#fff}
+  pointer-events:none
+}
+
+.session-expired-msg{
+  display:flex;align-items:center;justify-content:center;gap:.45rem;
+  padding:.75rem 1.25rem;background:#ffeaea;color:$wrong;font-weight:600
+}
+
+.loading{
+  margin:6rem auto;max-width:220px;text-align:center;font-size:1.05rem;color:#000;
+  .spinner{width:42px;height:42px;border:5px solid #cbd5e1;border-top-color:$primary-700;
+    border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.quiz-wrapper{max-width:900px;margin:4rem auto 6rem;padding:0 1.25rem 2rem}
+.quiz-title{
+  text-align:center;
+  font-weight:700;
+  font-size:clamp(2rem,1rem,3rem);
+  margin-bottom:3rem;
+  color:#111
+}
+.gradient-text{-webkit-background-clip:text;-webkit-text-fill-color:transparent;background:linear-gradient(90deg,$primary-700,$primary-500)}
+
+.question-card{
+  margin-bottom:2rem;border-radius:20px;background:#fff;box-shadow:0 8px 22px rgba(16,38,73,.12);
+  mat-card-title{
+    display:flex;align-items:flex-start;font-size:1.25rem;font-weight:700;gap:.6rem;color:#000;
+    .q-number{background:$primary-700;color:#fff;font-size:.9rem;font-weight:700;padding:.25rem .55rem;border-radius:8px;flex-shrink:0}
+  }
+}
+
+.options{
+  display:flex;flex-direction:column;gap:.6rem;padding:1.25rem 1rem 1.6rem;
+
+  /* GLOBAL OVERRIDES — BREAK MATERIAL TEXT FADE */
+  :host ::ng-deep .mat-radio-button .mat-radio-label-content,
+  :host ::ng-deep .mat-mdc-radio-button .mdc-label{color:#000!important;opacity:1!important}
+
+  .option{font-size:1rem;padding:.6rem .9rem;border-radius:12px;transition:background .25s ease}
+
+  .option:hover:not(.mat-radio-disabled){background:rgba(0,0,0,.06)}
+
+  .option-text{color:#000!important;font-weight:600}
+
+  .opt-key{font-weight:700;margin-right:.55rem}
+
+  .indicator{margin-left:.65rem;font-size:1.3rem;vertical-align:text-bottom}
+  .correct{color:$correct}.wrong{color:$wrong}
+}
+
+.submit-btn{display:block;margin:2rem auto 0;padding-inline:3rem;font-weight:600;border-radius:999px}
+
+.score-card{
+  margin:3rem auto 0;max-width:320px;text-align:center;background:#fff;padding:2rem 2.5rem;border-radius:20px;
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+  h2{margin:0 0 .75rem;font-size:1.6rem;font-weight:700;color:$primary-700}
+  p{margin:0;font-size:2.2rem;font-weight:700;color:#000}
+}
+
+@keyframes slide-down{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
+.animate-slide-down{animation:slide-down .4s ease-out both}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --mdc-theme-text-primary-on-background:#e8eaf6;
+    --mdc-theme-text-secondary-on-background:#e8eaf6;
+  }
+
+  :host{background:linear-gradient(135deg,#101522 0%,#1e2738 100%);color:#e8eaf6}
+  .question-card,.score-card{background:#1e2337;color:#e8eaf6;box-shadow:0 8px 28px rgba(0,0,0,.6)}
+  :host ::ng-deep .mat-radio-button .mat-radio-label-content,
+  :host ::ng-deep .mat-mdc-radio-button .mdc-label{color:#e8eaf6!important}
+  .option:hover:not(.mat-radio-disabled){background:rgba(255,255,255,.05)}
+  .loading .spinner{border-color:#4b556b;border-top-color:$primary-500}
+  .session-expired-msg{background:#3c0d0d;color:#ff8a80}
+}

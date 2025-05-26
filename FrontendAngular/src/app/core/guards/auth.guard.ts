@@ -10,6 +10,7 @@ export class AuthGuard implements CanActivate {
     if (token) {
       return true;
     }
+    alert("Your session has expired. Please log in again")
     this.router.navigate(['/']);
     return false;
   }
