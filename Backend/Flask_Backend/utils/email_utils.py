@@ -1,8 +1,11 @@
 import base64
 import email
 import hashlib
+import os
 import re
 import string
+from pathlib import Path
+
 import joblib
 import requests
 import spacy
@@ -78,7 +81,9 @@ def extract_decode_email_body(email_payload):
 
 def load_model():
     """Loads the AI model that predicts phishing based on email body and returns it."""
-    model = joblib.load(AI_MODEL_ABS_PATH)
+    base_dir = Path(__file__).resolve().parent.parent  # Go from utils/ -> Flask_Backend/
+    model_path = base_dir / 'AI_models' / 'phishing_better_preprocessing.pkl'
+    model = joblib.load(model_path)
     return model
 
 def build_credentials_for_user(user):
