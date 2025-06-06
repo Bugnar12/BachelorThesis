@@ -20,7 +20,6 @@ logger = get_logger()
 
 @gmail_bp.route("/authorize", methods=["GET"])
 def authorize():
-    session.clear()  # Clear the session to avoid leftover data
     logger.info("Session before setting state: {}".format(dict(session)))
     auth_flow = Flow.from_client_secrets_file(
         GmailConfig.CLIENT_SECRET_FILE,
