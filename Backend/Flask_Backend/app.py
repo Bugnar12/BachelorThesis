@@ -10,14 +10,14 @@ from jwt_auth import jwt
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
-migrate = Migrate(app, db)
-
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"])
 
 app.secret_key = Config.APP_SECRET_KEY
 app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY
 app.config.from_object(Config)
+
+migrate = Migrate(app, db)
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"])
 
 db.init_app(app)
 jwt.init_app(app)
