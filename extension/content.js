@@ -112,11 +112,13 @@ function insertVerdictLabel(verdict, textPrediction, urlPrediction, vtPrediction
 function performScan(forced = false) {
     if (!autoScan && !forced) return;
 
+    // Selct the DOM elements that contain relevant email fields
     const subjectNode = document.querySelector('h2[data-legacy-thread-id]');
     const bodyContainer = document.querySelector('div.a3s');
     const senderNode = document.querySelector('.gD');
     if (!subjectNode || !bodyContainer) return;
 
+    // Extract the actual content from DOM nodes
     const subject = subjectNode.innerText;
     const sender = senderNode ? senderNode.getAttribute('email') || senderNode.innerText : '';
     const uniqueKey = subject + '|' + sender;
