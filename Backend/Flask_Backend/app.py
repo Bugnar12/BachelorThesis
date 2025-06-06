@@ -10,12 +10,24 @@ from database import db
 from jwt_auth import jwt
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-db = SQLAlchemy()
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config["SQLALCHEMY_DATABASE_URI"] = Config.SQLALCHEMY_DATABASE_URI
 app.secret_key = Config.APP_SECRET_KEY
 app.config["JWT_SECRET_KEY"] = Config.JWT_SECRET_KEY
+
+db_uri = os.getenv("DB_URL_DEPLOY") or os.getenv("DATABASE_URL")
+if not db_uri:
+    raise RuntimeError(
+        "SQLALCHEMY_DATABASE_URI missing – set DB_URL_DEPLOY or DATABASE_URL"
+    )
+
+if db_uri.startswith("postgres://"):
+    print("WTF")
+    db_uri = db_uri.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+
 
 migrate = Migrate(app, db)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}},
