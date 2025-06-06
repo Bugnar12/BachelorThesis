@@ -16,7 +16,7 @@ class QuizService:
     def get_question_by_id(self, question_id):
         question = self.repo.fetch_question_by_id(question_id)
         if not question:
-            abort(404, description=f"Question with ID {question_id} not found.")
+            abort(404, description="Question with ID {} not found.".format(question_id))
         return jsonify(question.to_dict()), 200
 
     def submit_quiz(self, user_id, data):
@@ -33,7 +33,7 @@ class QuizService:
 
             selected_opt = entry['selected_option']
             if not hasattr(q, selected_opt):
-                return jsonify({"error": f"Invalid selected option: {selected_opt}"}), 400
+                return jsonify({"error": "Invalid selected option: {}".format(selected_opt)}), 400
 
             correct_value = getattr(q, q.correct_answer)
             selected_value = getattr(q, selected_opt)

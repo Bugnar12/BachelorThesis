@@ -59,7 +59,6 @@ def predict_email_from_extension():
     sender = data.get('sender', '')
     body = data.get('body', '')
 
-    # Call your existing EmailService or prediction logic
     result = email_service.predict_from_extension(subject, sender, body)
 
     logger.info("VirusTotal prediction: {}".format(result["vt_prediction"]))
@@ -80,11 +79,11 @@ def get_dns_info(url):
 @email_bp.route("/report-fp", methods=["POST"])
 def report_false_positive():
     data = request.get_json()
-    logger.info(f"[USER REPORT] False Positive reported: {data}")
+    logger.info("[USER REPORT] False Positive reported: {}".format(data))
     return jsonify({"status": "ok"}), 200
 
 @email_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_email_stats():
     user_id = get_jwt_identity()
-    return EmailStatsService().get_summary_for_user(user_id)
+    return stats_service.get_summary_for_user(user_id)

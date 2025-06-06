@@ -1,13 +1,13 @@
 import os
-from datetime import timedelta
 
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class Config:
     APP_SECRET_KEY = os.getenv('APP_SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL_DEPLOY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv('FLASK_JWT_SECRET_KEY')
     # TODO: MODIFY THIS AFTER TESTING TO A LONGER TIME
@@ -34,3 +34,9 @@ class VAPIDConfig:
         "sub": "mailto:eduardbugnaru@gmail.com"
     }
     FCM_API_KEY = os.getenv('FCM_API_KEY')
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = "test-secret"

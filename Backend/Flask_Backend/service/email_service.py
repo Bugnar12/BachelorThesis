@@ -20,17 +20,11 @@ class EmailService:
         email = self.__repository.get_email_by_id(email_id)
         email_body = email.email_body
         processed_email_body = preprocess_text(email_body)
-        # TODO: The below part should be moved
-        # url = email_utils.extract_url_from_body(email.email_body)
-        # logger.info("URL: {}".format(url))
-        # if email_utils.is_url_shortened(url):
-        #     logger.info("URL is shortened")
-        #     url = email_utils.unshorten_url(url)
-        #     logger.info("Unshortened URL: {}".format(url))
-
+        logger.info(self.__model.classes_)
         probabilities = self.__model.predict_proba([processed_email_body])[0]
-        prediction = "Phishing text" if probabilities[1] >= 0.7 else "Safe text"
+        prediction = "Phishing text" if probabilities[0] >= 0.7 else "Safe text"
         email.text_prediction = prediction
+        logger.info("prediction is {} and proba is {}".format(prediction, probabilities[1]))
 
         return {"prediction": prediction }
 
@@ -44,7 +38,6 @@ class EmailService:
 
 
     def predict_url_virustotal(self, url):
-        # domain = email_utils.extract_domain(url)
         domain = url
         logger.info("Domain in virusTotal: {}".format(domain))
         vt_dns_info = self.__vt_service.get_vt_dns_info(domain)
@@ -88,7 +81,7 @@ class EmailService:
 
         for url in urls:
             parsed = urlparse(url)
-            minimal_url = f"{parsed.scheme}://{parsed.netloc}"
+            minimal_url = "{}://{}".format(parsed.scheme, parsed.netloc)
 
             logger.info("[EXTENSION] Stripped URL: {} → {}".format(url, minimal_url))
 

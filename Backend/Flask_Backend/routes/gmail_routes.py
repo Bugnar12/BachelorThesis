@@ -1,6 +1,5 @@
 import json
 from datetime import timedelta
-from os import access
 
 from flask import Blueprint, redirect, session, request, jsonify
 from flask_jwt_extended import create_access_token
@@ -22,7 +21,7 @@ logger = get_logger()
 @gmail_bp.route("/authorize", methods=["GET"])
 def authorize():
     session.clear()  # Clear the session to avoid leftover data
-    logger.info(f"Session before setting state: {dict(session)}")
+    logger.info("Session before setting state: {}".format(dict(session)))
     auth_flow = Flow.from_client_secrets_file(
         GmailConfig.CLIENT_SECRET_FILE,
         GmailConfig.GMAIL_SCOPE,
@@ -41,7 +40,7 @@ def authorize():
 @gmail_bp.route("/oauth2callback", methods=["GET"])
 def gmail_callback():
     returned_state = request.args.get('state')
-    logger.info(f"State in session: {session.get('state')}")
+    logger.info("State in session: {session.get('state')}")
     state = session.get('state')
     if not state or state != returned_state:
         return "Missing or mismatching state", 400
@@ -58,7 +57,7 @@ def gmail_callback():
     service = build('gmail', 'v1', credentials=creds)
     profile = service.users().getProfile(userId='me').execute()
     email = profile['emailAddress']
-    user = User.query.filter_by(user_email=email).first()
+    user = gmail_service.get_user_by_email(email)
 
     # Service for watching the inbox gmail of the user using Gmail API
     watch_request_body = {

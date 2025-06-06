@@ -32,6 +32,11 @@ class VirusTotalService:
             return None
 
     def get_vt_dns_report_results(self, vt_data):
+        if vt_data is None:
+            logger.warning("VirusTotal data is None, cannot extract DNS report.")
+            return {
+                "final_verdict": "unknown"
+            }
         attr = vt_data.get("data", {}).get("attributes", {})
 
         reputation = attr.get("reputation", 0)

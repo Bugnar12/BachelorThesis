@@ -89,7 +89,7 @@ def build_credentials_for_user(user):
 
     if not gmail_token:
         # TODO: replace all f"" with .format()
-        raise ValueError(f"No Gmail token found for user {user.user_email}")
+        raise ValueError("No Gmail token found for user {}".format(user.user_email))
 
     creds = Credentials(
         token=gmail_token.access_token,
@@ -193,7 +193,7 @@ def resolve_redirect_url(url: str, timeout: int = 3) -> str:
         resp = requests.head(url, allow_redirects=True, timeout=timeout)
         return resp.url  # Final destination
     except Exception as e:
-        logger.warning(f"Redirect resolution failed for {url}: {e}")
+        logger.warning("Redirect failed for {}: {}".format(url, e))
         return url  # Fallback: return original if resolution fails
 
 def decode_data(data):
@@ -202,7 +202,7 @@ def decode_data(data):
             # Take the first element or raise a meaningful error
             data = data[0]
         if not isinstance(data, str):
-            raise ValueError(f"Expected string for base64 decode, got {type(data)}: {data}")
+            raise ValueError("Expected string for base64 decode, got {}: {}".format(type(data), data))
 
         logger.info("Result data: {}".format(data))
 

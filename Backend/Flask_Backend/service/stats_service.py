@@ -1,24 +1,24 @@
 import json
-from datetime import datetime, timedelta
 from flask import jsonify
-from sqlalchemy import func
 
 from repository.repository import Repository
 from model.email import Email
+from utils.logs import get_logger
+
+logger = get_logger()
 
 
 class EmailStatsService:
     def __init__(self, db_session):
         self.__repository = Repository(db_session)
 
-    def get_summary_for_user(self, user_id):
+    def get_summary_for_user(self, user_id: int):
         query = self.__repository.get_emails_query_by_user(user_id)
 
         total = query.count()
         phishing = query.filter(Email.final_verdict == 'phishing').count()
         legitimate = query.filter(Email.final_verdict == 'legitimate').count()
 
-        emails = query.all()
         detection_counts = {
             'ai_url': 0,
             'ai_text': 0,
@@ -26,25 +26,33 @@ class EmailStatsService:
             'uncategorized': 0
         }
 
-        for email in emails:
-            detected_by = self.detect_source(email)
-            detection_counts[detected_by] += 1
+        for email in query.all():
+            detection_counts[self.detect_source(email)] += 1
 
-        last_30_days = datetime.utcnow() - timedelta(days=30)
-        timeline_data = self.__repository.session.query(
-            func.date(Email.email_timestamp), func.count()
-        ).filter(
-            Email.user_id == user_id,
-            Email.email_timestamp >= last_30_days
-        ).group_by(func.date(Email.email_timestamp)).all()
+        # ⬇️ 30-minute slots, last 24 h (adjust days as needed)
+        timeline_rows = self.__repository.get_email_timeline_by_user(
+            user_id, days=1, slot_minutes=30
+        )
 
-        return jsonify({
-            'total': total,
-            'phishing': phishing,
-            'legitimate': legitimate,
-            'detection_breakdown': detection_counts,
-            'timeline': [{'date': str(d), 'count': c} for d, c in timeline_data]
-        })
+        timeline = [
+            {
+                "date": row.slot.isoformat(timespec="seconds"),
+                "count": int(row.count),
+                "phishing": int(row.phishing)
+            }
+            for row in timeline_rows
+        ]
+
+        payload = {
+            "total": total,
+            "phishing": phishing,
+            "legitimate": legitimate,
+            "detection_breakdown": detection_counts,
+            "timeline": timeline
+        }
+
+        logger.info(payload)
+        return jsonify(payload)
 
     def detect_source(self, email):
         try:
@@ -56,7 +64,7 @@ class EmailStatsService:
                 return 'vt'
             if url_ai.get('label') == 'phishing':
                 return 'ai_url'
-            if text_ai.get('label') == 'phishing':
+            if text_ai.get('prediction') == 'Phishing text':
                 return 'ai_text'
         except Exception:
             pass

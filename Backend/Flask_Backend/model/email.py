@@ -30,6 +30,17 @@ class Email(db.Model):
         self.email_recipient = email_recipient
         self.email_body = email_body
 
+    @classmethod
+    def from_body_only(cls, email_body):
+        return cls(
+            user_id=None,
+            gmail_message_id=None,
+            email_sender=None,
+            email_subject=None,
+            email_recipient=None,
+            email_body=email_body
+        )
+
     def to_dict(self):
         return {
             "email_id": self.email_id,

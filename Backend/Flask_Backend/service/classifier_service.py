@@ -16,6 +16,7 @@ class ClassifierService:
 
     def classify_url(self, url):
         logger.info("Starting url classification...")
+        logger.info("classification url: {}".format(url))
         inputs = self.tokenizer(url, return_tensors="pt", truncation=True)
         with torch.no_grad():
             outputs = self.model(**inputs)

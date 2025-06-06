@@ -1,4 +1,6 @@
-from sqlalchemy import func
+from datetime import date, timedelta, datetime
+
+from sqlalchemy import func, text, case
 
 from model.email import Email
 from model.gmail_token import GmailToken
@@ -11,7 +13,6 @@ from utils.logs import get_logger
 logger = get_logger()
 
 class Repository:
-
     def __init__(self, database):
         self.__db = database
 
@@ -136,3 +137,43 @@ class Repository:
 
     def commit(self):
         self.__db.commit()
+
+    def get_email_timeline_by_user(
+            self,
+            user_id: int,
+            days: int = 1,
+            slot_minutes: int = 30
+    ):
+        """
+        Return rows like:
+            slot-start-iso, total_count, phishing_count
+        """
+        if 60 % slot_minutes:
+            raise ValueError("slot_minutes must divide evenly into an hour")
+
+        since = datetime.utcnow() - timedelta(days=days)
+
+        # round DOWN to nearest slot: hh:00, hh:30, ...
+        table = Email.__tablename__  # 'emails'
+
+        slot = (
+                func.date_trunc('hour', Email.email_timestamp) +
+                text("INTERVAL '30 minutes' * floor(date_part('minute', {}.email_timestamp) / 30)".format(table))
+        ).label('slot')
+
+        return (
+            self.__db.query(
+                slot,
+                func.count().label('count'),
+                func.sum(
+                    case((Email.final_verdict == 'phishing', 1), else_=0)
+                ).label('phishing')
+            )
+            .filter(
+                Email.user_id == user_id,
+                Email.email_timestamp >= since
+            )
+            .group_by(slot)
+            .order_by(slot)
+            .all()
+        )

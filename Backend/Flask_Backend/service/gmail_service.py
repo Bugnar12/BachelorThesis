@@ -7,8 +7,7 @@ from service.email_service import EmailService
 from service.push_notification_service import PushNotificationService
 from service.virustotal_service import VirusTotalService
 from utils import email_utils
-from utils.email_utils import get_credentials_for_user, unshorten_url, is_url_shortened, compute_sha256, \
-    save_attachment_temp
+from utils.email_utils import get_credentials_for_user, unshorten_url, is_url_shortened, save_attachment_temp
 from utils.logs import get_logger
 from googleapiclient.discovery import build
 
@@ -101,7 +100,7 @@ class GmailService:
 
         email.final_verdict = verdict
 
-        logger.info(f"[Verdict] Final verdict for email {email.email_id}: {verdict}")
+        logger.info("[Verdict] Final verdict for email with ID {}: {}".format(email.email_id, verdict))
 
         # notify user
         user = self.__repository.get_user_by_id(email.user_id)
@@ -120,6 +119,13 @@ class GmailService:
             return
 
         self.__process_messages(messages, service, user, email_address, history_id)
+
+    def get_user_by_email(self, email_address):
+        user = self.__repository.get_user_by_email(email_address)
+        if not user:
+            logger.warning("No user found for email: {}".format(email_address))
+            return None
+        return user
 
     def __get_user_and_check_creds(self, email_address):
         user = self.__repository.get_user_by_email(email_address)

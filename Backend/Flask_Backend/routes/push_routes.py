@@ -24,6 +24,6 @@ def subscribe_push():
     user.push_subscription = json.dumps(subscription_info)
     db.session.commit()
 
-    logger.info(f"Push subscription saved for user {user.user_email}")
+    logger.info("Push subscription saved for user {}".format(user.user_email))
 
     return jsonify({"success": True}), 201
