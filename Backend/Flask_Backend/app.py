@@ -3,12 +3,14 @@ import os
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 from config.config import Config
 from database import db
 from jwt_auth import jwt
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+db = SQLAlchemy()
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config["SQLALCHEMY_DATABASE_URI"] = Config.SQLALCHEMY_DATABASE_URI
