@@ -20,9 +20,10 @@ logger = get_logger()
 
 @gmail_bp.route("/authorize", methods=["GET"])
 def authorize():
+    # session.clear() was here before
     logger.info("Session before setting state: {}".format(dict(session)))
     auth_flow = Flow.from_client_secrets_file(
-        GmailConfig.CLIENT_SECRET_FILE,
+        GmailConfig.get_secret_file_path(),
         GmailConfig.GMAIL_SCOPE,
         redirect_uri=GmailConfig.REDIRECT_URI
     )

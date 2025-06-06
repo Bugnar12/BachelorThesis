@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 
@@ -17,15 +18,16 @@ class Config:
     VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY')
 
 class GmailConfig:
-    _json_raw = os.environ.get("GMAIL_CLIENT_SECRET")
-    _client_secret_path = None
+    @staticmethod
+    def get_secret_file_path():
+        data = os.environ.get("GMAIL_CLIENT_SECRET")
+        if not data:
+            raise RuntimeError("GMAIL_CLIENT_SECRET env var is missing")
 
-    if _json_raw:
-        with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as temp:
-            temp.write(_json_raw)
-            _client_secret_path = temp.name
-
-    CLIENT_SECRET_FILE = _client_secret_path
+        temp = tempfile.NamedTemporaryFile(delete=False, suffix=".json", mode="w")
+        json.dump(json.loads(data), temp)
+        temp.close()
+        return temp.name
     GMAIL_SCOPE = ["https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/userinfo.email",
     "openid"
