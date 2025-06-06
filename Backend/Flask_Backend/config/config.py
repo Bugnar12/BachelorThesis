@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -16,7 +17,15 @@ class Config:
     VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY')
 
 class GmailConfig:
-    CLIENT_SECRET_FILE = os.environ.get("GMAIL_CLIENT_SECRET")
+    _json_raw = os.environ.get("GMAIL_CLIENT_SECRET")
+    _client_secret_path = None
+
+    if _json_raw:
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as temp:
+            temp.write(_json_raw)
+            _client_secret_path = temp.name
+
+    CLIENT_SECRET_FILE = _client_secret_path
     GMAIL_SCOPE = ["https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/userinfo.email",
     "openid"
