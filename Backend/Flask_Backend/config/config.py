@@ -16,7 +16,7 @@ class Config:
     VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY')
 
 class GmailConfig:
-    CLIENT_SECRET_FILE = os.getenv('GMAIL_CLIENT_SECRET')
+    CLIENT_SECRET_FILE = os.environ.get("GMAIL_CLIENT_SECRET")
     GMAIL_SCOPE = ["https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/userinfo.email",
     "openid"
