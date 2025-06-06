@@ -23,7 +23,6 @@ if not db_uri:
     )
 
 if db_uri.startswith("postgres://"):
-    print("WTF")
     db_uri = db_uri.replace("postgres://", "postgresql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri

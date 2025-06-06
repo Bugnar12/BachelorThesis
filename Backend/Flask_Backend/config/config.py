@@ -21,7 +21,7 @@ class GmailConfig:
     "https://www.googleapis.com/auth/userinfo.email",
     "openid"
     ]
-    REDIRECT_URI = os.getenv('GMAIl_REDIRECT_URI', "http://localhost:5000/gmail/oauth2callback")
+    REDIRECT_URI = os.getenv('GMAIl_REDIRECT_URI', "https://bachelorthesis-production-8acf.up.railway.app/gmail/oauth2callback")
     GMAIL_SUBSCRIPTION_TOPIC = r"projects/infra-inkwell-454717-t0/topics/gmail-incoming-emails"
 
 class HFConfig:
