@@ -46,7 +46,7 @@ def gmail_callback():
         return "Missing or mismatching state", 400
 
     callback_flow = Flow.from_client_secrets_file(
-        GmailConfig.CLIENT_SECRET_FILE,
+        GmailConfig.get_secret_file_path(),
         GmailConfig.GMAIL_SCOPE,
         state=state,
         redirect_uri=GmailConfig.REDIRECT_URI
