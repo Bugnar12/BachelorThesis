@@ -20,13 +20,11 @@ class EmailService:
         email = self.__repository.get_email_by_id(email_id)
         email_body = email.email_body
         processed_email_body = preprocess_text(email_body)
-        logger.info(self.__model.classes_)
         probabilities = self.__model.predict_proba([processed_email_body])[0]
         prediction = "Phishing text" if probabilities[0] >= 0.7 else "Safe text"
         email.text_prediction = prediction
-        logger.info("prediction is {} and proba is {}".format(prediction, probabilities[1]))
 
-        return {"prediction": prediction }
+        return prediction
 
     def predict_email_text_direct(self, body: str):
         processed_text = preprocess_text(body)
