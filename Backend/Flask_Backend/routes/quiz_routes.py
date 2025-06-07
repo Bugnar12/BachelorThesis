@@ -1,11 +1,7 @@
-from flask import Blueprint, jsonify, abort, request
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy import func
 
 from database import db
-from model.quiz_attempt import QuizAttempt
-from model.quiz_question import QuizQuestion
-from model.user_quiz_answers import UserQuizAnswer
 from service.quiz_service import QuizService
 
 quiz_bp = Blueprint("quiz", __name__, url_prefix="/quiz")

@@ -22,7 +22,7 @@ from unshortenit import UnshortenIt
 
 from database import db
 from model.user import User
-from utils.definitions import AI_MODEL_ABS_PATH, URL_SHORTENERS, IMAGE_EXTENSIONS
+from utils.definitions import URL_SHORTENERS, IMAGE_EXTENSIONS
 from utils.logs import get_logger
 
 logger = get_logger()
