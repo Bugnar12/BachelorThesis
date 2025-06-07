@@ -24,7 +24,7 @@ class EmailService:
         prediction = "Phishing text" if probabilities[0] >= 0.7 else "Safe text"
         email.text_prediction = prediction
 
-        return prediction
+        return {"prediction": prediction }
 
     def predict_email_text_direct(self, body: str):
         processed_text = preprocess_text(body)
