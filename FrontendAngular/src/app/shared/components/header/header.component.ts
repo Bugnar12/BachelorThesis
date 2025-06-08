@@ -10,9 +10,4 @@ import {AuthService} from '../../../core/services/auth.service';
 })
 export class HeaderComponent {
   constructor(private auth: AuthService, private router: Router) {}
-
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/']);
-  }
 }

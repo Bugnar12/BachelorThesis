@@ -4,6 +4,8 @@ import {MatAnchor, MatIconButton} from '@angular/material/button';
 import {Router, RouterLink} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
 import {AuthService} from '../../../core/services/auth.service';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-navbar',
@@ -18,12 +20,27 @@ import {AuthService} from '../../../core/services/auth.service';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-  constructor(private auth: AuthService, private router: Router) {
-  }
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
 
-  /** clears JWTs and returns to landing page */
   logout(): void {
-    this.auth.logout();                  // removes tokens from localStorage
-    this.router.navigate(['/']);         // send user to login / landing
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirm Logout',
+        message: 'Are you sure you want to log out?',
+        confirmText: 'Logout',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.auth.logout();
+        this.router.navigate(['/']);
+      }
+    });
   }
 }
