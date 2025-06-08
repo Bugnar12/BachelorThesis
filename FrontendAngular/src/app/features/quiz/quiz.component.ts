@@ -47,7 +47,7 @@ export class QuizComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get<QuizQuestion[]>('http://localhost:5000/quiz/questions').subscribe({
+    this.http.get<QuizQuestion[]>('https://bachelorthesis-production-8acf.up.railway.app/quiz/questions').subscribe({
       next: (data) => {
         this.questions = data;
         this.loading = false;
@@ -71,7 +71,7 @@ export class QuizComponent implements OnInit {
       selected_option: this.selectedAnswers[q.id]
     }));
 
-    this.http.post('http://localhost:5000/quiz/submit', { answers: answersPayload }).subscribe({
+    this.http.post('https://bachelorthesis-production-8acf.up.railway.app/quiz/submit', { answers: answersPayload }).subscribe({
       next: (res: any) => {
         console.log('Quiz submitted successfully', res);
         this.score = res.score;

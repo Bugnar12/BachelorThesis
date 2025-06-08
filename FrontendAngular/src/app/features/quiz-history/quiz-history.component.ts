@@ -35,7 +35,7 @@ export class QuizHistoryComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<QuizAttempt[]>('http://localhost:5000/quiz/history').subscribe({
+    this.http.get<QuizAttempt[]>('https://bachelorthesis-production-8acf.up.railway.app/quiz/history').subscribe({
       next: (data) => {
         this.attempts = data;
         this.loading = false;

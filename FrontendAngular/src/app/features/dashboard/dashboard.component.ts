@@ -105,9 +105,19 @@ export class DashboardComponent implements OnInit {
     return Math.ceil(this.totalEmails / this.pageSize);
   }
 
-  isPredictionObject(pred: string | Prediction | undefined): pred is Prediction {
-    return typeof pred !== 'string' && !!pred && 'label' in pred && 'score' in pred;
+  isPredictionObject(
+    pred: any
+  ): pred is { label?: string; prediction?: string; score?: number; confidence?: number } {
+    return (
+      pred &&
+      typeof pred === 'object' &&
+      ('prediction' in pred || 'label' in pred)
+    );
   }
+
+  getLabel = (p: any) => ('prediction' in p ? p.prediction : p.label);
+  getScore = (p: any) => ('confidence' in p ? p.confidence : p.score);
+
 
   private tryParsePrediction(input: string | any): any {
     if (typeof input === 'string' && input.trim().startsWith('{')) {

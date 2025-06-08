@@ -6,7 +6,7 @@ import {EmailStats} from '../../shared/models/email-stats';
 
 @Injectable({ providedIn: 'root' })
 export class GmailService {
-  private baseUrl = 'http://localhost:5000';
+  private baseUrl = 'https://bachelorthesis-production-8acf.up.railway.app';
 
   constructor(private http: HttpClient) {}
 

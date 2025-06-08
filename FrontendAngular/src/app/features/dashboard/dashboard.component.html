@@ -1,141 +1,163 @@
-<app-header></app-header>
+  <app-header></app-header>
 
-<div class="hero-top" aria-hidden="true">
-  <svg viewBox="0 0 1440 120"><path d="M0,80 C360,140 1080,20 1440,80 L1440,0 L0,0 Z" /></svg>
-</div>
-
-<!-- ───── DASHBOARD CARD ───── -->
-<div class="dashboard mat-typography">
-  <h2 class="gradient-text">Inbox Threat Report</h2>
-
-  <!-- Manual Analyze Button -->
-  <div class="action-bar">
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      routerLink="/manual-analyze"
-      class="action-btn"
-    >
-      <mat-icon aria-hidden="true">psychology</mat-icon>
-      Manual Analyze
-    </button>
+  <div class="hero-top" aria-hidden="true">
+    <svg viewBox="0 0 1440 120"><path d="M0,80 C360,140 1080,20 1440,80 L1440,0 L0,0 Z" /></svg>
   </div>
 
-  <!-- Loading Spinner -->
-  <app-loading-spinner
-    *ngIf="isLoading"
-    message="Loading emails"
-  ></app-loading-spinner>
+  <div class="dashboard mat-typography">
+    <h2 class="gradient-text">Inbox Threat Report</h2>
 
-  <!-- No Emails -->
-  <div *ngIf="emails?.length === 0 && !isLoading" class="no-emails">
-    <mat-card class="empty-card">
-      No emails found.
-    </mat-card>
-  </div>
+    <div class="action-bar">
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        routerLink="/manual-analyze"
+        class="action-btn"
+      >
+        <mat-icon aria-hidden="true">psychology</mat-icon>
+        Manual Analyze
+      </button>
+    </div>
 
-  <!-- Emails Accordion -->
-  <mat-accordion
-    *ngIf="emails?.length && emails.length > 0"
-    class="email-accordion"
-    multi
-  >
-    <mat-expansion-panel
-      *ngFor="let email of emails"
-      class="email-panel"
-      hideToggle
+    <app-loading-spinner
+      *ngIf="isLoading"
+      message="Loading emails"
+    ></app-loading-spinner>
+
+    <div *ngIf="emails?.length === 0 && !isLoading" class="no-emails">
+      <mat-card class="empty-card">
+        No emails found.
+      </mat-card>
+    </div>
+
+    <mat-accordion
+      *ngIf="emails?.length && emails.length > 0"
+      class="email-accordion"
+      multi
     >
-      <mat-expansion-panel-header>
-        <div class="panel-header-container">
-          <div class="panel-title">
-            <mat-icon class="email-icon" aria-hidden="true">email</mat-icon>
-            {{ email.email_subject || '(No Subject)' }}
+      <mat-expansion-panel
+        *ngFor="let email of emails"
+        class="email-panel"
+        hideToggle
+      >
+        <mat-expansion-panel-header>
+          <div class="panel-header-container">
+            <div class="panel-title">
+              <mat-icon class="email-icon" aria-hidden="true">email</mat-icon>
+              {{ email.email_subject || '(No Subject)' }}
+            </div>
+            <div class="panel-description">
+              From: {{ email.email_sender }} | To: {{ email.email_recipient }}
+            </div>
           </div>
-          <div class="panel-description">
-            From: {{ email.email_sender }} | To: {{ email.email_recipient }}
-          </div>
+        </mat-expansion-panel-header>
+
+        <div class="email-detail">
+          <p><strong>Received:</strong> {{ email.email_timestamp }}</p>
+
+          <p><strong>Body:</strong> {{ email.email_body }}</p>
+
+          <p *ngIf="email.text_prediction">
+            <strong>Text Prediction:</strong>
+
+            <ng-container *ngIf="isPredictionObject(email.text_prediction); else plainText">
+      <span
+        class="badge"
+        [ngClass]="email.text_prediction?.prediction?.toLowerCase()"
+      >
+        {{ email.text_prediction.prediction | titlecase }}
+      </span>
+
+              <span class="confidence" *ngIf="email.text_prediction.confidence !== undefined">
+        ({{ email.text_prediction.confidence * 100 | number:'1.0-1' }} % confidence)
+      </span>
+            </ng-container>
+
+            <ng-template #plainText>
+              {{ email.text_prediction }}
+            </ng-template>
+          </p>
+
+          <p *ngIf="email.url_prediction">
+            <strong>URL Prediction:</strong>
+
+            <ng-container *ngIf="isPredictionObject(email.url_prediction); else urlPlain">
+              <span
+                class="badge"
+                [ngClass]="(email.url_prediction?.label || email.url_prediction?.prediction)?.toLowerCase()"
+              >
+                {{ (email.url_prediction.label || email.url_prediction.prediction) | titlecase }}
+              </span>
+
+              <span
+                class="confidence"
+                *ngIf="email.url_prediction?.score != null || email.url_prediction?.confidence != null"
+              >
+              ({{ ((email.url_prediction?.score ?? email.url_prediction?.confidence ?? 0) * 100) | number:'1.0-1' }} % confidence)
+              </span>
+
+            </ng-container>
+
+            <ng-template #urlPlain>
+              {{ email.url_prediction }}
+            </ng-template>
+          </p>
+
+
+          <button mat-button color="warn" (click)="reportFalsePositive(email.email_id)">
+            Report as False Positive
+          </button>
+
+          <p *ngIf="email.vt_domain_result">
+            <strong>VirusTotal Domain:</strong>
+            <span
+              class="badge"
+              [ngClass]="{
+                phishing: email.vt_domain_result.toLowerCase() === 'phishing',
+                suspicious: email.vt_domain_result.toLowerCase() === 'suspicious',
+                safe: email.vt_domain_result.toLowerCase() === 'legitimate' || email.vt_domain_result.toLowerCase() === 'safe'
+              }"
+            >
+              {{ email.vt_domain_result | titlecase }}
+
+
+            </span>
+          </p>
         </div>
-      </mat-expansion-panel-header>
+      </mat-expansion-panel>
+    </mat-accordion>
 
-      <!-- Detail -->
-      <div class="email-detail">
-        <p><strong>Received:</strong> {{ email.email_timestamp }}</p>
-
-        <p><strong>Body:</strong> {{ email.email_body }}</p>
-
-        <p *ngIf="email.text_prediction">
-          <strong>Text Prediction:</strong> {{ email.text_prediction }}
-        </p>
-
-        <p *ngIf="isPredictionObject(email.url_prediction)">
-          <strong>URL Prediction:</strong>
-          <span
-            class="badge"
-            [ngClass]="email.url_prediction.label.toLowerCase()"
-          >
-            {{ email.url_prediction.label | titlecase }}
-          </span>
-          <span class="confidence">
-            ({{ email.url_prediction.score * 100 | number:'1.0-1' }} % confidence)
-          </span>
-        </p>
-
-        <button mat-button color="warn" (click)="reportFalsePositive(email.email_id)">
-          Report as False Positive
-        </button>
-
-        <p *ngIf="email.vt_domain_result">
-          <strong>VirusTotal Domain:</strong>
-          <span
-            class="badge"
-            [ngClass]="{
-              phishing: email.vt_domain_result.toLowerCase() === 'phishing',
-              suspicious: email.vt_domain_result.toLowerCase() === 'suspicious',
-              safe: email.vt_domain_result.toLowerCase() === 'legitimate' || email.vt_domain_result.toLowerCase() === 'safe'
-            }"
-          >
-            {{ email.vt_domain_result | titlecase }}
-
-
-          </span>
-        </p>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
-
-  <!-- Pagination -->
-  <div
-    class="pagination-controls"
-    *ngIf="!isLoading && totalEmails > pageSize"
-  >
-    <button
-      mat-stroked-button
-      color="primary"
-      type="button"
-      (click)="onPageChange(currentPage - 1)"
-      [disabled]="currentPage === 1"
+    <div
+      class="pagination-controls"
+      *ngIf="!isLoading && totalEmails > pageSize"
     >
-      Previous
-    </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        Previous
+      </button>
 
-    <span class="page-info"
-    >Page {{ currentPage }} / {{ getTotalPages }}</span
-    >
+      <span class="page-info"
+      >Page {{ currentPage }} / {{ getTotalPages }}</span
+      >
 
-    <button
-      mat-stroked-button
-      color="primary"
-      type="button"
-      (click)="onPageChange(currentPage + 1)"
-      [disabled]="currentPage * pageSize >= totalEmails"
-    >
-      Next
-    </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage * pageSize >= totalEmails"
+      >
+        Next
+      </button>
+    </div>
   </div>
-</div>
 
-<!-- ───── Bottom wave ───── -->
-<div class="hero-bottom" aria-hidden="true">
-  <svg viewBox="0 0 1440 120"><path d="M0,40 C480,0 960,140 1440,40 L1440,120 L0,120 Z" /></svg>
-</div>
+  <div class="hero-bottom" aria-hidden="true">
+    <svg viewBox="0 0 1440 120"><path d="M0,40 C480,0 960,140 1440,40 L1440,120 L0,120 Z" /></svg>
+  </div>

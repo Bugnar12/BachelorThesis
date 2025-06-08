@@ -78,7 +78,7 @@ export class ManualAnalyzeComponent {
     if (accessToken && !this.isTokenExpired(accessToken)) {
       window.location.href = '/dashboard';
     } else {
-      window.location.href = 'http://localhost:5000/gmail/authorize';
+      window.location.href = 'https://bachelorthesis-production-8acf.up.railway.app/gmail/authorize';
     }
   }
 
