@@ -10,9 +10,9 @@ function setBadge(state) {
 }
 
 /* receive verdicts from the content-script */
-chrome.runtime.onMessage.addListener((msg, sender) => {
+chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === "PHISHING_VERDICT") {
-        setBadge(msg.verdict);                 // "phishing" | "safe"
+        setBadge(msg.verdict);
     }
 });
 

@@ -18,7 +18,7 @@ document.getElementById("analyzeBtn").addEventListener("click", async () => {
 
             resultEl.innerText = `Analyzing...\n\nSubject: ${subject || "N/A"}\nSender: ${sender || "N/A"}`;
             // 🔁 Send to Flask backend for phishing prediction
-            fetch("http://localhost:5000/emails/predict/email", {
+            fetch("https://bachelorthesis-production-8acf.up.railway.app/emails/predict/email", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

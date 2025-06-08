@@ -91,7 +91,7 @@ function insertVerdictLabel(verdict, textPrediction, urlPrediction, vtPrediction
     });
 
     reportBtn.onclick = () => {
-        fetch("http://localhost:5000/emails/report-fp", {
+        fetch("https://bachelorthesis-production-8acf.up.railway.app/emails/report-fp", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ subject: subjectBar.innerText, verdict, timestamp: Date.now() })
@@ -129,7 +129,7 @@ function performScan(forced = false) {
     const possibleDeepDiv = bodyContainer.querySelector('div[dir="ltr"]');
     if (possibleDeepDiv) body = possibleDeepDiv.innerHTML;
 
-    fetch("http://localhost:5000/emails/predict/email", {
+    fetch("https://bachelorthesis-production-8acf.up.railway.app/emails/predict/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject, sender, body })
