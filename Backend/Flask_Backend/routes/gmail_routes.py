@@ -84,7 +84,7 @@ def gmail_callback():
     refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
 
     # TODO: replace this
-    return redirect("http://localhost:4200/dashboard?access_token={}&refresh_token={}".format(
+    return redirect("https://soothing-healing-production.up.railway.app/dashboard?access_token={}&refresh_token={}".format(
         access_token, refresh_token)
     )
 
