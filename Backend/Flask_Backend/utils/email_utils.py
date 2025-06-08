@@ -93,7 +93,6 @@ def build_credentials_for_user(user):
     gmail_token = user.gmail_token  # assuming one-to-one relationship via backref
 
     if not gmail_token:
-        # TODO: replace all f"" with .format()
         raise ValueError("No Gmail token found for user {}".format(user.user_email))
 
     creds = Credentials(

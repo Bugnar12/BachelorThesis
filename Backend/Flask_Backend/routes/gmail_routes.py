@@ -11,6 +11,7 @@ from database import db
 from model.user import User
 from service.gmail_service import GmailService
 from utils import email_utils
+from utils.definitions import FRONTEND_BASE_URL
 from utils.logs import get_logger
 
 gmail_bp = Blueprint("gmail", __name__, url_prefix="/gmail")
@@ -84,8 +85,8 @@ def gmail_callback():
     refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
 
     # TODO: replace this
-    return redirect("https://soothing-healing-production.up.railway.app/dashboard?access_token={}&refresh_token={}".format(
-        access_token, refresh_token)
+    return redirect("{}/dashboard?access_token={}&refresh_token={}".format(
+        FRONTEND_BASE_URL, access_token, refresh_token)
     )
 
 

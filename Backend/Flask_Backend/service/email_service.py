@@ -26,6 +26,7 @@ class EmailService:
 
         return {"prediction": prediction }
 
+    # TODO: check the actual index of phishing or legit - for extension
     def predict_email_text_direct(self, body: str):
         processed_text = preprocess_text(body)
         if not processed_text.strip():
