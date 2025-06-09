@@ -104,11 +104,6 @@
             </ng-template>
           </p>
 
-
-          <button mat-button color="warn" (click)="reportFalsePositive(email.email_id)">
-            Report as False Positive
-          </button>
-
           <p *ngIf="email.vt_domain_result">
             <strong>VirusTotal Domain:</strong>
             <span
@@ -120,10 +115,11 @@
               }"
             >
               {{ email.vt_domain_result | titlecase }}
-
-
             </span>
           </p>
+          <button mat-button color="warn" (click)="reportFalsePositive(email.email_id)">
+            Report as False Positive
+          </button>
         </div>
       </mat-expansion-panel>
     </mat-accordion>
