@@ -28,7 +28,7 @@ class VirusTotalService:
         if response.status_code == 200:
             return response.json()
         else:
-            logger.error("Error fetching data from VT API: {}".format(response.status_code))
+            logger.error("yError fetching data from VT API: {}".format(response.status_code))
             return None
 
     def get_vt_dns_report_results(self, vt_data):

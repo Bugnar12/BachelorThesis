@@ -15,7 +15,7 @@ class Config:
     # TODO: MODIFY THIS AFTER TESTING TO A LONGER TIME
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=31)
-    VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY')
+    VT_API_KEY = os.environ.get('VIRUSTOTAL_API_KEY')
 
 class GmailConfig:
     @staticmethod

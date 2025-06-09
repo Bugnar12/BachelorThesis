@@ -1,5 +1,7 @@
 import json
 
+from google.auth.exceptions import RefreshError
+
 from database import db
 from model.email import Email
 from repository.repository import Repository
@@ -163,8 +165,10 @@ class GmailService:
                 logger.info("No new messages found for user: {}".format(user.user_email))
 
             return messages
-        except Exception as e:
-            logger.exception("Failed to fetch Gmail history.: {}".format(e))
+        except RefreshError as e:
+            logger.warning("Refresh token error for user {}. Reason: {}".format(user.user_email, str(e)))
+            user.gmail_token = None
+            db.session.commit()
             return []
 
     def __process_messages(self, messages, service, user, email_address, history_id):

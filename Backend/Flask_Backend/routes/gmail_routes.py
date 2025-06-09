@@ -84,7 +84,6 @@ def gmail_callback():
     # modify this after testing -> increase the expiration time by a lot
     refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
 
-    # TODO: replace this
     return redirect("{}/dashboard?access_token={}&refresh_token={}".format(
         FRONTEND_BASE_URL, access_token, refresh_token)
     )

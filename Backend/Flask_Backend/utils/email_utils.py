@@ -1,7 +1,6 @@
 import base64
 import email
 import hashlib
-import os
 import re
 import string
 from pathlib import Path
