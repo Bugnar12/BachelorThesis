@@ -92,6 +92,9 @@ class GmailService:
             vt_result = self.__email_service.predict_url_virustotal(final_url)
             vt_pred_raw = vt_result.get("prediction", [])
             vt_label = vt_pred_raw[0].lower() if isinstance(vt_pred_raw, list) and vt_pred_raw else "unknown"
+            logger.info("vt prediction raw: {}".format(vt_pred_raw))
+            logger.info("vt label raw: {}".format(vt_label))
+
             email.vt_domain_prediction = vt_label
         else:
             logger.warning("No URL found in email body")

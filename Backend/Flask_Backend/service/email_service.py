@@ -41,6 +41,8 @@ class EmailService:
         logger.info("Domain in virusTotal: {}".format(domain))
         vt_dns_info = self.__vt_service.get_vt_dns_info(domain)
         vt_report = self.__vt_service.get_vt_dns_report_results(vt_dns_info)
+        logger.info("vt_dns_info logged: {}".format(vt_dns_info))
+        logger.info("vt_report logged: {}".format(vt_report))
 
         return {
             "prediction": vt_report["final_verdict"],
