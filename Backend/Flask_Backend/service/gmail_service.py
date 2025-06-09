@@ -95,7 +95,7 @@ class GmailService:
             logger.info("vt prediction raw: {}".format(vt_pred_raw))
             logger.info("vt label raw: {}".format(vt_label))
 
-            email.vt_domain_prediction = vt_label
+            email.vt_domain_result = vt_label
         else:
             logger.warning("No URL found in email body")
 
