@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import {AuthService} from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class PushNotificationService {
   readonly VAPID_PUBLIC_KEY = 'BFV9qqSEE7rCxhbzpcUs2C2UGpd23WfZyivXEzUULz6KI0-XJ7ycFJX7YE1oYBDRUofy40JMLwRuQ0tYmFTn0-8';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   async initPush() {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -37,8 +41,13 @@ export class PushNotificationService {
 
       await this.http.post(
         'https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe',
-        subscription)
-        .toPromise();
+        subscription,
+        {
+          headers: {
+            Authorization: 'Bearer ' + this.authService.getAccessToken()
+          }
+        }
+      ).toPromise();
       console.log('Push subscription sent to backend');
     } catch (err) {
       console.error('Push subscription failed:', err);
