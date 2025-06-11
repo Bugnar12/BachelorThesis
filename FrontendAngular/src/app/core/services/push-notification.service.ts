@@ -19,12 +19,7 @@ export class PushNotificationService {
 
         await navigator.serviceWorker.ready; // 🔑 Wait for it to be active
         console.log('Service Worker ready');
-
-        const existing = localStorage.getItem('pushSubscribed');
-        if (!existing) {
-          await this.subscribe(registration);
-          localStorage.setItem('pushSubscribed', 'true');
-        }
+        await this.subscribe(registration);
       } catch (err) {
         console.error('Service worker registration failed:', err);
       }
