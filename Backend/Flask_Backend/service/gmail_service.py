@@ -170,7 +170,9 @@ class GmailService:
             return messages
         except RefreshError as e:
             logger.warning("Refresh token error for user {}. Reason: {}".format(user.user_email, str(e)))
-            user.gmail_token = None
+            if user.gmail_token:
+                db.session.delete(user.gmail_token)
+
             db.session.commit()
             return []
 
