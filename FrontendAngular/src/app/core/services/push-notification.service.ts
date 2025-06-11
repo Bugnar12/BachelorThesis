@@ -11,10 +11,10 @@ export class PushNotificationService {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       try {
         const registration = await navigator.serviceWorker.register('/service-worker.js');
-        console.log('✅ Service Worker registered');
+        console.log('Service Worker registered');
 
         await navigator.serviceWorker.ready; // 🔑 Wait for it to be active
-        console.log('✅ Service Worker ready');
+        console.log('Service Worker ready');
 
         const existing = localStorage.getItem('pushSubscribed');
         if (!existing) {
@@ -22,7 +22,7 @@ export class PushNotificationService {
           localStorage.setItem('pushSubscribed', 'true');
         }
       } catch (err) {
-        console.error('❌ Service worker registration failed:', err);
+        console.error('Service worker registration failed:', err);
       }
     }
   }
@@ -35,7 +35,10 @@ export class PushNotificationService {
         applicationServerKey: this.urlBase64ToUint8Array(this.VAPID_PUBLIC_KEY)
       });
 
-      await this.http.post('/push/subscribe', subscription).toPromise();
+      await this.http.post(
+        'https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe',
+        subscription)
+        .toPromise();
       console.log('Push subscription sent to backend');
     } catch (err) {
       console.error('Push subscription failed:', err);
