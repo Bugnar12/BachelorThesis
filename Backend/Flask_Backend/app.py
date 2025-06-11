@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config.config import Config
 from database import db
 from jwt_auth import jwt
+from utils.definitions import FRONTEND_BASE_URL
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
@@ -29,8 +30,12 @@ app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 
 
 migrate = Migrate(app, db)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"])
+CORS(
+    app,
+    supports_credentials=True,
+    resources={r"/*": {"origins": FRONTEND_BASE_URL}},
+    allow_headers=["Content-Type", "Authorization"]
+)
 
 db.init_app(app)
 jwt.init_app(app)
