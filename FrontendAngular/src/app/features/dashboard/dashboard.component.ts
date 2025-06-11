@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
 import {Prediction} from '../../shared/models/prediction';
+import {PushNotificationService} from '../../core/services/push-notification.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,10 +45,12 @@ export class DashboardComponent implements OnInit {
     private gmailService: GmailService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private pushNotificationService: PushNotificationService
   ) {}
 
   ngOnInit(): void {
+    this.pushNotificationService.initPush();
     this.route.queryParams.subscribe(params => {
       const accessToken = params['access_token'];
       const refreshToken = params['refresh_token'];
