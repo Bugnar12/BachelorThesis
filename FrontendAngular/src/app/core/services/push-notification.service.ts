@@ -4,7 +4,7 @@ import {AuthService} from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class PushNotificationService {
-  readonly VAPID_PUBLIC_KEY = 'BFV9qqSEE7rCxhbzpcUs2C2UGpd23WfZyivXEzUULz6KI0-XJ7ycFJX7YE1oYBDRUofy40JMLwRuQ0tYmFTn0-8';
+  readonly VAPID_PUBLIC_KEY = 't4m-8_xgAZNLH94M2_O1GWB6Tj8ovF_JgKqXjdygS7w';
 
   constructor(
     private http: HttpClient,
