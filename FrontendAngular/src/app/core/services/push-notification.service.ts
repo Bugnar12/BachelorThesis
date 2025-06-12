@@ -27,27 +27,30 @@ export class PushNotificationService {
   }
 
 
-  private async subscribe(registration: ServiceWorkerRegistration) {
-    try {
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.VAPID_PUBLIC_KEY)
-      });
+  async subscribe() {
+    const registration = await navigator.serviceWorker.ready;
+    const existingSubscription = await registration.pushManager.getSubscription();
 
-      await this.http.post(
-        'https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe',
-        subscription,
-        {
-          headers: {
-            Authorization: 'Bearer ' + this.authService.getAccessToken()
-          }
-        }
-      ).toPromise();
-      console.log('Push subscription sent to backend');
-    } catch (err) {
-      console.error('Push subscription failed:', err);
+    if (existingSubscription) {
+      // Unsubscribe the old one
+      await existingSubscription.unsubscribe();
+      console.log('Old push subscription removed');
     }
+
+    // Convert your base64 public key
+    const convertedVapidKey = this.urlBase64ToUint8Array(this.vapidPublicKey);
+
+    const newSubscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedVapidKey,
+    });
+
+    console.log('New push subscription:', newSubscription);
+
+    // Send newSubscription to your backend
+    await this.http.post(`${environment.apiBaseUrl}/user/push/subscribe`, newSubscription).toPromise();
   }
+
 
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
