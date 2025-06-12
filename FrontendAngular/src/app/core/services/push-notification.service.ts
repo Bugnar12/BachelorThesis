@@ -27,18 +27,15 @@ export class PushNotificationService {
   }
 
 
-  async subscribe() {
-    const registration = await navigator.serviceWorker.ready;
+  async subscribe(registration: ServiceWorkerRegistration) {
     const existingSubscription = await registration.pushManager.getSubscription();
 
     if (existingSubscription) {
-      // Unsubscribe the old one
       await existingSubscription.unsubscribe();
       console.log('Old push subscription removed');
     }
 
-    // Convert your base64 public key
-    const convertedVapidKey = this.urlBase64ToUint8Array(this.vapidPublicKey);
+    const convertedVapidKey = this.urlBase64ToUint8Array(this.VAPID_PUBLIC_KEY);
 
     const newSubscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -47,9 +44,9 @@ export class PushNotificationService {
 
     console.log('New push subscription:', newSubscription);
 
-    // Send newSubscription to your backend
-    await this.http.post(`${environment.apiBaseUrl}/user/push/subscribe`, newSubscription).toPromise();
+    await this.http.post(`https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe`, newSubscription).toPromise();
   }
+
 
 
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
