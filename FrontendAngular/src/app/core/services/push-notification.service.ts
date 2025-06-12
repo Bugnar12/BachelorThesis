@@ -44,7 +44,15 @@ export class PushNotificationService {
 
     console.log('New push subscription:', newSubscription);
 
-    await this.http.post(`https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe`, newSubscription).toPromise();
+    await this.http.post(
+      `https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe`,
+      newSubscription,
+      {
+        headers: {
+          Authorization: `Bearer ${this.authService.getAccessToken()}`
+        }
+      }
+    ).toPromise();
   }
 
 
