@@ -35,7 +35,7 @@ migrate = Migrate(app, db)
 
 CORS(app, supports_credentials=True, resources={
     r"/*": {
-        "origins": "*",
+        "origins": "{}".format(FRONTEND_BASE_URL),
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Authorization", "Content-Type"]
     }

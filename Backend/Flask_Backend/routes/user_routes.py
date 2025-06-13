@@ -18,7 +18,6 @@ def get_all_users():
 
 @jwt_required()
 @user_bp.route("/push/subscribe", methods=["POST", "OPTIONS"])
-@cross_origin()
 def subscribe_push():
     user_id = get_jwt_identity()
     user = db.session.query(User).filter_by(id=user_id).first()
