@@ -49,8 +49,10 @@ export class PushNotificationService {
       newSubscription,
       {
         headers: {
-          Authorization: `Bearer ${this.authService.getAccessToken()}`
-        }
+          Authorization: `Bearer ${this.authService.getAccessToken()}`,
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
       }
     ).toPromise();
   }
