@@ -1,8 +1,10 @@
 import json
+import os
 
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from pywebpush import webpush, WebPushException
 
 from model.user import User
 from database import db
@@ -37,3 +39,27 @@ def subscribe_push():
     db.session.commit()
 
     return jsonify({"message": "Subscription saved"}), 200
+
+@user_bp.route('/push/send', methods=['POST'])
+@jwt_required()
+def send_push():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user or not user.push_subscription:
+        return jsonify({"error": "User not subscribed"}), 400
+
+    payload = request.get_json().get("message", "You have a new notification!")
+    subscription_info = json.loads(user.push_subscription)
+
+    try:
+        webpush(
+            subscription_info,
+            data=json.dumps({"title": "Phishing Alert", "body": payload}),
+            vapid_private_key=os.getenv("VAPID_PRIVATE_KEY"),
+            vapid_claims={"sub": os.getenv("VAPID_EMAIL")}
+        )
+        return jsonify({"message": "Notification sent!"}), 200
+    except WebPushException as ex:
+        print("Web push failed:", repr(ex))
+        return jsonify({"error": "Push failed"}), 500
