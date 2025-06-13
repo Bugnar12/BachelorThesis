@@ -16,6 +16,7 @@ def get_all_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
+@jwt_required()
 @user_bp.route("/push/subscribe", methods=["POST", "OPTIONS"])
 def subscribe_push():
     user_id = get_jwt_identity()
