@@ -31,12 +31,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 
 migrate = Migrate(app, db)
 
-CORS(app,
-     supports_credentials=True,
-     resources={r"/*": {"origins": "*"}},
-     allow_headers="*",
-     expose_headers="*",
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+
+
+CORS(app, supports_credentials=True, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Authorization", "Content-Type"]
+    }
+})
+
 
 
 db.init_app(app)
