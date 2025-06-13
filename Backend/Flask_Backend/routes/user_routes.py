@@ -28,7 +28,7 @@ def subscribe_push():
     if not user_id:
         return jsonify({"error": "Missing or invalid token"}), 401
 
-    user = db.session.query(User).filter_by(id=user_id).first()
+    user = db.session.query(User).filter_by(user_id=user_id).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
 
