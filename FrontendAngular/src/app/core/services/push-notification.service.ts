@@ -45,7 +45,7 @@ export class PushNotificationService {
     console.log('New push subscription:', newSubscription);
 
     await this.http.post(
-      `https://bachelorthesis-production-8acf.up.railway.app/user/push/subscribe`,
+      `https://bachelorthesis-production-8acf.up.railway.app/users/push/subscribe`,
       newSubscription,
       {
         headers: {
