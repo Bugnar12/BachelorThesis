@@ -16,12 +16,19 @@ def get_all_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
-@jwt_required()
-@user_bp.route("/push/subscribe", methods=["POST", "OPTIONS"])
-def subscribe_push():
-    user_id = get_jwt_identity()
-    user = db.session.query(User).filter_by(id=user_id).first()
 
+@user_bp.route("/push/subscribe", methods=["POST", "OPTIONS"])
+@jwt_required(optional=True)
+def subscribe_push():
+    # Return early for OPTIONS requests (used in CORS preflight)
+    if request.method == 'OPTIONS':
+        return jsonify({'message': 'OK'}), 200
+
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({"error": "Missing or invalid token"}), 401
+
+    user = db.session.query(User).filter_by(id=user_id).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
 
