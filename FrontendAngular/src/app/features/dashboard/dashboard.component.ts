@@ -46,11 +46,9 @@ export class DashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private pushNotificationService: PushNotificationService
   ) {}
 
   ngOnInit(): void {
-    this.pushNotificationService.initPush();
     this.route.queryParams.subscribe(params => {
       const accessToken = params['access_token'];
       const refreshToken = params['refresh_token'];
