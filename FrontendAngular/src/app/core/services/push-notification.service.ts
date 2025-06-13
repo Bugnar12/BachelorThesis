@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {AuthService} from './auth.service';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class PushNotificationService {
@@ -17,46 +17,49 @@ export class PushNotificationService {
         const registration = await navigator.serviceWorker.register('/service-worker.js');
         console.log('Service Worker registered');
 
-        await navigator.serviceWorker.ready; // 🔑 Wait for it to be active
+        await navigator.serviceWorker.ready;
         console.log('Service Worker ready');
+
         await this.subscribe(registration);
       } catch (err) {
-        console.error('Service worker registration failed:', err);
+        console.error('Service Worker registration failed:', err);
       }
     }
   }
 
+  private async subscribe(registration: ServiceWorkerRegistration) {
+    try {
+      const existingSubscription = await registration.pushManager.getSubscription();
+      if (existingSubscription) {
+        await existingSubscription.unsubscribe();
+        console.log('Old subscription removed');
+      }
 
-  async subscribe(registration: ServiceWorkerRegistration) {
-    const existingSubscription = await registration.pushManager.getSubscription();
+      const convertedVapidKey = this.urlBase64ToUint8Array(this.VAPID_PUBLIC_KEY);
 
-    if (existingSubscription) {
-      await existingSubscription.unsubscribe();
-      console.log('Old push subscription removed');
-    }
+      const newSubscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey,
+      });
 
-    const convertedVapidKey = this.urlBase64ToUint8Array(this.VAPID_PUBLIC_KEY);
+      console.log('New push subscription:', newSubscription);
 
-    const newSubscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: convertedVapidKey,
-    });
-
-    console.log('New push subscription:', newSubscription);
-
-    await this.http.post(
-      `https://bachelorthesis-production-8acf.up.railway.app/users/push/subscribe`,
-      newSubscription,
-      {
-        headers: {
-          Authorization: `Bearer ${this.authService.getAccessToken()}`,
-          'Content-Type': 'application/json'
+      await this.http.post(
+        'https://bachelorthesis-production-8acf.up.railway.app/users/push/subscribe',
+        newSubscription,
+        {
+          headers: {
+            Authorization: `Bearer ${this.authService.getAccessToken()}`,
+            'Content-Type': 'application/json',
+          }
         }
-      }
-    ).toPromise();
+      ).toPromise();
+
+      console.log('Push subscription sent to backend');
+    } catch (err) {
+      console.error('Push subscription failed:', err);
+    }
   }
-
-
 
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);

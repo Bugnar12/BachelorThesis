@@ -1,21 +1,32 @@
-self.addEventListener('push', function(event) {
-  const data = event.data?.json() || {};
+self.addEventListener('push', event => {
+  const data = event.data?.json() || { title: 'Phishing Alert', body: 'New suspicious activity detected.' };
+
   const options = {
-    body: data.body || 'Phishing alert detected!',
-    icon: '/assets/icons/phishing.png',
+    body: data.body,
+    icon: '/assets/icons/icon-512x512.png',
+    badge: '/assets/icons/badge-128x128.png',
     data: {
       url: data.url || '/'
     }
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Alert', options)
+    self.registration.showNotification(data.title, options)
   );
 });
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
+
+  const urlToOpen = event.notification.data?.url || '/';
   event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      return clients.openWindow(urlToOpen);
+    })
   );
 });
