@@ -41,7 +41,6 @@ export class StatsComponent implements OnInit {
     });
   }
 
-  /* ---------- helpers ---------- */
   get phishingPercentage(): number {
     return this.stats?.total
       ? Math.round((this.stats.phishing / this.stats.total) * 100)
