@@ -119,11 +119,11 @@ class GmailService:
             return
 
         service = self.__build_gmail_service(email_address)
-        messages = self.__fetch_new_messages(service, user, history_id)
+        messages = self.__fetch_new_messages(service, user)
         if not messages:
             return
 
-        self.__process_messages(messages, service, user, email_address, history_id)
+        self.__process_messages(messages, user, email_address, history_id)
 
     def get_user_by_email(self, email_address):
         user = self.__repository.get_user_by_email(email_address)
