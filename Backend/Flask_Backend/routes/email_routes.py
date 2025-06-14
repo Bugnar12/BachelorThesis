@@ -53,6 +53,7 @@ def get_emails():
     }), 200
 
 @email_bp.route('/predict/email', methods=['POST'])
+@jwt_required(optional=True)
 def predict_email_from_extension():
     data = request.get_json()
     subject = data.get('subject', '')
