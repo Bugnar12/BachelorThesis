@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from repository.repository import Repository
 from service.classifier_service import ClassifierService
 from service.virustotal_service import VirusTotalService
-from utils.email_utils import load_model, extract_domain, preprocess_text, resolve_redirect_url
+from utils.email_utils import load_model, preprocess_text
 from utils.logs import get_logger
 from utils import email_utils
 
@@ -26,7 +26,6 @@ class EmailService:
 
         return {"prediction": prediction }
 
-    # TODO: check the actual index of phishing or legit - for extension
     def predict_email_text_direct(self, body: str):
         processed_text = preprocess_text(body)
         if not processed_text.strip():
@@ -45,7 +44,6 @@ class EmailService:
 
         return {
             "prediction": vt_report["final_verdict"],
-            # TODO: the below fields will be added in an extended report
             # "summary": vt_report["summary"],
             # "triggers": vt_report["triggers"]
         }

@@ -64,16 +64,6 @@ class VirusTotalService:
             "triggers": triggers
         }
 
-    def check_file_hash(self, file_path):
-        vt_file_hash_endpoint = "{}/files".format(self.__base_url, file_path)
-        headers = {
-            "x-apikey": self.__vt_api_key
-        }
-        with open(file_path, "rb") as f:
-            files = {"file": (file_path, f)}
-            response = requests.post(vt_file_hash_endpoint, headers=headers, files=files)
-        return response.json()
-
     def get_analysis_report(self, analysis_id):
         url = "{}/analyses/{}".format(self.__base_url, analysis_id)
         headers = {

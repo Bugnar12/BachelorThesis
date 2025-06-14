@@ -1,4 +1,3 @@
-
 def test_get_random_questions(client, auth_header):
     response = client.get('/quiz/questions', headers=auth_header)
     assert response.status_code == 200

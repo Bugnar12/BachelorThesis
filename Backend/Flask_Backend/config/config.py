@@ -12,9 +12,8 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL_DEPLOY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv('FLASK_JWT_SECRET_KEY')
-    # TODO: MODIFY THIS AFTER TESTING TO A LONGER TIME
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
-    JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=31)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=30)
     VT_API_KEY = os.environ.get('VIRUSTOTAL_API_KEY')
 
 class GmailConfig:
@@ -29,8 +28,8 @@ class GmailConfig:
         temp.close()
         return temp.name
     GMAIL_SCOPE = ["https://www.googleapis.com/auth/gmail.readonly",
-    "https://www.googleapis.com/auth/userinfo.email",
-    "openid"
+        "https://www.googleapis.com/auth/userinfo.email",
+        "openid"
     ]
     REDIRECT_URI = os.environ.get('GMAIl_REDIRECT_URI', "https://bachelorthesis-production-8acf.up.railway.app/gmail/oauth2callback")
     GMAIL_SUBSCRIPTION_TOPIC = r"projects/infra-inkwell-454717-t0/topics/gmail-incoming-emails"

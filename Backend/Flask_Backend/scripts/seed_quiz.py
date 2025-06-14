@@ -1,12 +1,13 @@
 import sys
 import os
 
-# Add your project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app import app, db  # assuming `app` and `db` are initialized in app.py
+from app import app, db
 from model.quiz_question import QuizQuestion
 from repository.repository import Repository
+
+# This script was used purely for seeding the quiz questions in DB
 
 with app.app_context():
     repo = Repository(db.session)

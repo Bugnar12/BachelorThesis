@@ -1,5 +1,4 @@
 def test_get_email_stats(client, mocker, auth_header):
-    # Mock response returned by stats_service.get_summary_for_user
     mock_result = {
         'total': 10,
         'phishing': 4,

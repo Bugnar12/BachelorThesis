@@ -81,7 +81,7 @@ def gmail_callback():
     # JWT authorization
     access_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=15))
     logger.info("Access token log: {}".format(access_token))
-    # modify this after testing -> increase the expiration time by a lot
+    # should increase the expiratiom time for the refresh token
     refresh_token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(minutes=31))
 
     return redirect("{}/dashboard?access_token={}&refresh_token={}".format(

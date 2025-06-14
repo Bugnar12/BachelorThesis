@@ -6,7 +6,6 @@ from utils.logs import get_logger
 
 logger = get_logger()
 
-
 class ClassifierService:
     def __init__(self):
         self.model_name = HF_MODEL_NAME

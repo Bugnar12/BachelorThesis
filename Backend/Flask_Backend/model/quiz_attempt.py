@@ -1,7 +1,5 @@
 from datetime import datetime, timezone
-
 from sqlalchemy import DateTime, func
-
 from database import db
 
 

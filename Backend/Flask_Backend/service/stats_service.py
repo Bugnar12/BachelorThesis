@@ -29,7 +29,6 @@ class EmailStatsService:
         for email in query.all():
             detection_counts[self.detect_source(email)] += 1
 
-        # ⬇️ 30-minute slots, last 24 h (adjust days as needed)
         timeline_rows = self.__repository.get_email_timeline_by_user(
             user_id, days=1, slot_minutes=30
         )

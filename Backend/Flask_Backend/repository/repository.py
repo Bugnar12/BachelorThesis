@@ -161,6 +161,7 @@ class Repository:
                 text("INTERVAL '30 minutes' * floor(date_part('minute', {}.email_timestamp) / 30)".format(table))
         ).label('slot')
 
+        # SQL like querying
         return (
             self.__db.query(
                 slot,

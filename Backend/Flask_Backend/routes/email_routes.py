@@ -71,11 +71,6 @@ def predict_email_from_extension():
     })
 
 
-@email_bp.route("/get_dns_info", methods=["GET"])
-def get_dns_info(url):
-    # return email_service.vt_dns_info(url)
-    pass
-
 @email_bp.route("/report-fp", methods=["POST"])
 def report_false_positive():
     data = request.get_json()

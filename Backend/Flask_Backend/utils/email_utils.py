@@ -52,6 +52,9 @@ def get_email_body(email_content):
     return body
 
 def extract_decode_email_body(email_payload):
+    """
+    Extracts and decodes the body of an email payload, handling both multipart and single part emails.
+    """
     stack = [email_payload]
 
     while stack:
@@ -68,7 +71,6 @@ def extract_decode_email_body(email_payload):
         if 'parts' in part:
             stack.extend(part['parts'])
 
-    # If no text/plain found, try top-level body
     if 'body' in email_payload and 'data' in email_payload['body']:
         data = email_payload['body']['data']
         if isinstance(data, list):
@@ -84,6 +86,8 @@ def load_model():
     model_path = base_dir / 'AI_models' / 'phishing_better_preprocessing.pkl'
     model = joblib.load(model_path)
     return model
+
+
 
 def build_credentials_for_user(user):
     """
@@ -167,7 +171,6 @@ def postprocess_urls(urls: list) -> list:
         if url.startswith("data:") or any(url.lower().endswith(ext) for ext in IMAGE_EXTENSIONS):
             continue
 
-        # Google redirect wrapper
         if "google.com/url?q=" in url:
             parsed = urlparse(url)
             qs = parse_qs(parsed.query)
@@ -175,13 +178,11 @@ def postprocess_urls(urls: list) -> list:
             if real_url:
                 url = unquote(real_url)
 
-        # Googleusercontent proxy images
         if "googleusercontent.com" in url and "#http" in url:
             parts = url.split("#")
             if len(parts) > 1 and parts[1].startswith("http"):
                 url = parts[1]
 
-        # Skip known CDN image hosts
         if re.search(r"\.(png|jpg|jpeg|webp|gif|svg)(\?|$)", url, re.IGNORECASE):
             continue
 
@@ -245,7 +246,6 @@ def unshorten_url(url):
         return url[0]
 
 def extract_domain(url):
-    # TODO: process multiple URLs
     return urlparse(url[0]).netloc
 
 def compute_sha256(base64_data):

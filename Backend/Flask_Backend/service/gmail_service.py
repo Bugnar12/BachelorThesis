@@ -9,7 +9,7 @@ from service.email_service import EmailService
 from service.push_notification_service import PushNotificationService
 from service.virustotal_service import VirusTotalService
 from utils import email_utils
-from utils.email_utils import get_credentials_for_user, unshorten_url, is_url_shortened, save_attachment_temp
+from utils.email_utils import get_credentials_for_user, unshorten_url, is_url_shortened
 from utils.logs import get_logger
 from googleapiclient.discovery import build
 
@@ -143,7 +143,7 @@ class GmailService:
         creds = get_credentials_for_user(email_address)
         return build('gmail', 'v1', credentials=creds)
 
-    def __fetch_new_messages(self, service, user, history_id):
+    def __fetch_new_messages(self, service, user):
         try:
             history = service.users().history().list(
                 userId='me',
@@ -176,7 +176,7 @@ class GmailService:
             db.session.commit()
             return []
 
-    def __process_messages(self, messages, service, user, email_address, history_id):
+    def __process_messages(self, messages, user, email_address, history_id):
         try:
             for msg in messages:
                 email = self.extract_fields_and_save_email(msg, email_address, user.user_id)
