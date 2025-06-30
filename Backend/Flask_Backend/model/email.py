@@ -20,7 +20,7 @@ class Email(db.Model):
 
     email_timestamp = db.Column(
         db.DateTime(timezone=True),
-        default=lambda: datetime.now(local_timezone)
+        default=lambda: datetime.now(timezone.utc)
     )
     user = db.relationship("User", backref="processed_emails")
 
