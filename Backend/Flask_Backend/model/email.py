@@ -1,6 +1,10 @@
 from datetime import datetime, timezone
 
+import pytz
+
 from database import db
+
+local_timezone = pytz.timezone('Europe/Bucharest')
 
 class Email(db.Model):
     __tablename__ = "emails"
@@ -14,7 +18,10 @@ class Email(db.Model):
     email_recipient = db.Column(db.String(255), nullable=False)
     email_body = db.Column(db.Text, nullable=False)
 
-    email_timestamp = db.Column(db.DateTime(timezone=True), default=datetime.now(timezone.utc))
+    email_timestamp = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(local_timezone)
+    )
     user = db.relationship("User", backref="processed_emails")
 
     text_prediction = db.Column(db.String, nullable=True)
