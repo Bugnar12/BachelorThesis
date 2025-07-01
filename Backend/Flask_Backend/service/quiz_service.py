@@ -10,7 +10,7 @@ class QuizService:
         self.repo = Repository(db_session)
 
     def get_random_questions(self):
-        questions = self.repo.fetch_random_questions(limit=10)
+        questions = self.repo.fetch_random_questions(limit=5)
         return jsonify([q.to_dict() for q in questions]), 200
 
     def get_question_by_id(self, question_id):
