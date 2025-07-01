@@ -29,8 +29,9 @@ class EmailService:
         padded_sequence = pad_sequences(sequence, maxlen=MAX_SEQUENCE_LENGTH)
 
         # Predict
-        probabilities = self.__model.predict(padded_sequence)[0][0]  # Output is a single sigmoid value
-        prediction = "Phishing text" if probabilities >= 0.7 else "Safe text"
+        safe_probability = self.__model.predict(padded_sequence)[0][0]
+        phishing_probability = 1 - safe_probability
+        prediction = "Phishing text" if phishing_probability >= 0.7 else "Safe text"
 
         email.text_prediction = prediction
 
