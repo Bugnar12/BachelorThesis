@@ -92,9 +92,6 @@ def load_model():
     return model
 
 
-
-
-
 def load_model_dl():
     base_dir = Path(__file__).resolve().parent.parent  # Go from utils/ -> Flask_Backend/
 
@@ -104,10 +101,10 @@ def load_model_dl():
 
     # Load the tokenizer
     tokenizer_path = base_dir / 'AI_models' / 'tokenizer.json'
-    with open(tokenizer_path, 'r') as f:
-        tokenizer_data = json.load(f)
-        tokenizer = tokenizer_from_json(tokenizer_data)
+    with open(tokenizer_path, 'r', encoding='utf-8') as f:
+        tokenizer_json = f.read()
 
+    tokenizer = tokenizer_from_json(tokenizer_json)
     return model, tokenizer
 
 
