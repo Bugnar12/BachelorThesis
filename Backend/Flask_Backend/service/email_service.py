@@ -40,11 +40,19 @@ class EmailService:
     def predict_email_text_direct(self, body: str):
         processed_text = preprocess_text(body)
         if not processed_text.strip():
-            return {"prediction": "text is empty after preprocessing"}
-        probabilities = self.__model.predict_proba([processed_text])[0]
-        prediction = "Phishing text" if probabilities[0] >= 0.8 else "Safe text"
-        return {"prediction": prediction}
+            return {"prediction": "Text is empty after preprocessing"}
 
+        # Tokenize and pad the input
+        seq = self.__tokenizer.texts_to_sequences([processed_text])
+        pad = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH, padding='post', truncating='post')
+
+        # Predict with the DL model
+        probability = self.__model.predict(pad)[0][0]
+        prediction = "Phishing text" if probability >= 0.7 else "Safe text"
+
+        return {
+            "prediction": prediction
+        }
 
     def predict_url_virustotal(self, url):
         domain = url
