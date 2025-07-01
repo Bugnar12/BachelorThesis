@@ -1,8 +1,11 @@
 from urllib.parse import urlparse
 
+from keras.src.utils import pad_sequences
+
 from repository.repository import Repository
 from service.classifier_service import ClassifierService
 from service.virustotal_service import VirusTotalService
+from utils.definitions import MAX_SEQUENCE_LENGTH
 from utils.email_utils import load_model, preprocess_text
 from utils.logs import get_logger
 from utils import email_utils
@@ -12,7 +15,7 @@ logger = get_logger()
 class EmailService:
     def __init__(self, db_session):
         self.__repository = Repository(db_session)
-        self.__model = load_model()
+        self.__model, self.__tokenizer = load_model()
         self.__classifier = ClassifierService()
         self.__vt_service = VirusTotalService()
 
@@ -20,11 +23,18 @@ class EmailService:
         email = self.__repository.get_email_by_id(email_id)
         email_body = email.email_body
         processed_email_body = preprocess_text(email_body)
-        probabilities = self.__model.predict_proba([processed_email_body])[0]
-        prediction = "Phishing text" if probabilities[0] >= 0.7 else "Safe text"
+
+        # Tokenize and pad
+        sequence = self.__tokenizer.texts_to_sequences([processed_email_body])
+        padded_sequence = pad_sequences(sequence, maxlen=MAX_SEQUENCE_LENGTH)
+
+        # Predict
+        probabilities = self.__model.predict(padded_sequence)[0][0]  # Output is a single sigmoid value
+        prediction = "Phishing text" if probabilities >= 0.7 else "Safe text"
+
         email.text_prediction = prediction
 
-        return {"prediction": prediction }
+        return {"prediction": prediction}
 
     def predict_email_text_direct(self, body: str):
         processed_text = preprocess_text(body)

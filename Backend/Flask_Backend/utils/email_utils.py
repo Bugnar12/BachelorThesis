@@ -3,6 +3,7 @@ import email
 import hashlib
 import re
 import string
+import json
 from pathlib import Path
 
 import joblib
@@ -23,6 +24,9 @@ from database import db
 from model.user import User
 from utils.definitions import URL_SHORTENERS, IMAGE_EXTENSIONS
 from utils.logs import get_logger
+
+from tensorflow.keras.models import load_model as keras_load_model
+from tensorflow.keras.preprocessing.text import tokenizer_from_json
 
 logger = get_logger()
 
@@ -87,6 +91,24 @@ def load_model():
     model = joblib.load(model_path)
     return model
 
+
+
+
+
+def load_model_dl():
+    base_dir = Path(__file__).resolve().parent.parent  # Go from utils/ -> Flask_Backend/
+
+    # Load LSTM model
+    model_path = base_dir / 'AI_models' / 'phishing_model.h5'
+    model = keras_load_model(model_path)
+
+    # Load the tokenizer
+    tokenizer_path = base_dir / 'AI_models' / 'tokenizer.json'
+    with open(tokenizer_path, 'r') as f:
+        tokenizer_data = json.load(f)
+        tokenizer = tokenizer_from_json(tokenizer_data)
+
+    return model, tokenizer
 
 
 def build_credentials_for_user(user):

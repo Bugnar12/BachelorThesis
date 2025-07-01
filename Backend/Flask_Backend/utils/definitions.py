@@ -18,3 +18,4 @@ URL_SHORTENERS = [
 ]
 IMAGE_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg')
 FRONTEND_BASE_URL="https://soothing-healing-production.up.railway.app"
+MAX_SEQUENCE_LENGTH = 1000
