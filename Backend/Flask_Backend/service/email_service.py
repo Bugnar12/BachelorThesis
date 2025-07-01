@@ -6,7 +6,7 @@ from repository.repository import Repository
 from service.classifier_service import ClassifierService
 from service.virustotal_service import VirusTotalService
 from utils.definitions import MAX_SEQUENCE_LENGTH
-from utils.email_utils import load_model, preprocess_text
+from utils.email_utils import load_model, preprocess_text, load_model_dl
 from utils.logs import get_logger
 from utils import email_utils
 
@@ -15,7 +15,7 @@ logger = get_logger()
 class EmailService:
     def __init__(self, db_session):
         self.__repository = Repository(db_session)
-        self.__model, self.__tokenizer = load_model()
+        self.__model, self.__tokenizer = load_model_dl()
         self.__classifier = ClassifierService()
         self.__vt_service = VirusTotalService()
 
