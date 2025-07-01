@@ -31,7 +31,7 @@ class EmailService:
         # Predict
         safe_probability = self.__model.predict(padded_sequence)[0][0]
         phishing_probability = 1 - safe_probability
-        prediction = "Phishing text" if phishing_probability >= 0.7 else "Safe text"
+        prediction = "Phishing text" if safe_probability >= 0.7 else "Safe text"
 
         email.text_prediction = prediction
 
@@ -49,7 +49,7 @@ class EmailService:
         # Predict with the DL model
         safe_probability = self.__model.predict(pad)[0][0]
         phishing_probability = 1 - safe_probability
-        prediction = "Phishing text" if phishing_probability >= 0.7 else "Safe text"
+        prediction = "Phishing text" if safe_probability >= 0.7 else "Safe text"
 
         return {
             "prediction": prediction
