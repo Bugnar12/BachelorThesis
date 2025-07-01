@@ -47,8 +47,9 @@ class EmailService:
         pad = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH, padding='post', truncating='post')
 
         # Predict with the DL model
-        probability = self.__model.predict(pad)[0][0]
-        prediction = "Phishing text" if probability >= 0.7 else "Safe text"
+        safe_probability = self.__model.predict(pad)[0][0]
+        phishing_probability = 1 - safe_probability
+        prediction = "Phishing text" if phishing_probability >= 0.7 else "Safe text"
 
         return {
             "prediction": prediction
