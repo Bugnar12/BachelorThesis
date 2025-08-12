@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Gmail Phishing Detector",
-  "version": "1.0",
+  "version": "1.0.2",
   "description": "Detects phishing in currently opened Gmail email.",
-  "permissions": ["scripting", "tabs", "activeTab", "contextMenus", "storage"],
+  "permissions": ["scripting", "activeTab", "contextMenus", "storage"],
   "host_permissions": [
     "https://mail.google.com/*",
     "https://bachelorthesis-production-8acf.up.railway.app/*"

@@ -144,6 +144,7 @@ function performScan(forced = false) {
             insertVerdictLabel("unknown", "unknown", "unknown", "unknown")
         });
 
+
 }
 
 const observer = new MutationObserver(() => performScan(false));
